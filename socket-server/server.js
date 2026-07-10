@@ -1,75 +1,42 @@
 const express = require('express');
 const http = require('http');
-const socketIo = require('socket.io');
-const bodyParser = require('body-parser');
+const { Server } = require('socket.io');
 const cors = require('cors');
 
 const app = express();
-const server = http.createServer(app);
-
-// Setup Socket.io dengan CORS yang terbuka lebar (Anti-Blokir Browser/Android)
-const io = socketIo(server, { 
-    cors: { origin: "*", methods: ["GET", "POST"] } 
-});
-
 app.use(cors());
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(express.json());
 
-// ==========================================
-// 🚀 API ENDPOINT: PENERIMA TEMBAKAN LARAVEL
-// ==========================================
-app.post('/push-notif', (req, res) => {
-    try {
-        // Pengaman 1: Cek apakah request bawa data (Mencegah error destructure)
-        if (!req.body) {
-            console.log('⚠️ [DITOLAK] Request tanpa body!');
-            return res.status(400).json({ success: false, message: 'Body is empty' });
-        }
-
-        const email = req.body.email;
-        const judul = req.body.judul || 'MilaStore V12';
-        const pesan = req.body.pesan || '';
-
-        // Pengaman 2: Wajib ada email target
-        if (!email) {
-            console.log('⚠️ [DITOLAK] Target Email kosong!');
-            return res.status(400).json({ success: false, message: 'Email target required' });
-        }
-
-        console.log(`🚀 [MENGUDARA] Rudal Notif ke: ${email} | Judul: ${judul}`);
-        
-        // Tembak ke Android APK yang sedang mantau channel email ini
-        io.emit(`notif_${email}`, { judul, pesan });
-        
-        return res.json({ success: true });
-
-    } catch (error) {
-        // Pengaman 3: Kalau ada error kode, server gak bakal mati!
-        console.error('🔥 [SYSTEM RESCUED] Terjadi error saat memproses notif:', error.message);
-        return res.status(500).json({ success: false, message: 'Internal Server Error' });
-    }
+const server = http.createServer(app);
+const io = new Server(server, {
+    cors: { origin: "*", methods: ["GET", "POST"] }
 });
 
-// ==========================================
-// 📡 SOCKET LISTENER: PANTAUAN HP MEMBER
-// ==========================================
-io.on('connection', (socket) => {
-    console.log(`[🟢] HP Member Nempel di Radar (ID: ${socket.id})`);
-
-    socket.on('disconnect', () => {
-        console.log(`[🔴] HP Member Lepas dari Radar (ID: ${socket.id})`);
+// 📡 SENSOR RADAR (Bisa dicek kapan saja lewat browser)
+app.get('/status-radar', (req, res) => {
+    res.json({
+        status: "TOWER AKTIF 🟢",
+        total_hp_tersambung: io.engine.clientsCount,
+        waktu_cek: new Date().toLocaleString('id-ID', { timeZone: 'Asia/Jakarta' })
     });
 });
 
-// ==========================================
-// 🔥 START ENGINE MENARA
-// ==========================================
-const PORT = 3003;
-server.listen(PORT, '0.0.0.0', () => {
-    console.log('======================================');
-    console.log('🔥 MENARA MILASTORE V12 SECURE READY! 🔥');
-    console.log(`📍 Berdiri kokoh di Port: ${PORT}`);
-    console.log('🛡️  Sistem Baju Besi (Anti-Crash): AKTIF');
-    console.log('======================================');
+// 🛡️ API TRIGGER (DIKUNCI HANYA UNTUK LARAVEL LOKAL)
+app.post('/trigger-notif', (req, res) => {
+    const clientIp = req.ip || req.connection.remoteAddress;
+    if (!clientIp.includes('127.0.0.1') && !clientIp.includes('::1')) {
+        return res.status(403).json({ error: "Akses Ditolak!" });
+    }
+    const { judul, pesan, url } = req.body;
+    io.emit('notif_global', { judul, pesan, url });
+    console.log(`[MILASTORE TOWER] Rudal meluncur ke ${io.engine.clientsCount} Device!`);
+    res.json({ success: true, target_tercapai: io.engine.clientsCount });
+});
+
+io.on('connection', (socket) => {
+    // Biarkan kosong agar server tidak lag saat member membludak
+});
+
+server.listen(3001, '0.0.0.0', () => {
+    console.log('🚀 TOWER MILASTORE BERHASIL DIPASANG RADAR!');
 });

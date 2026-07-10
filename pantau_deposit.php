@@ -8,10 +8,9 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 
 echo "=====================================================\n";
-echo "🛰️  MESIN 2: DEPOSIT AUTOMATION AKTIF...\n";
+echo "🛰️  MESIN 2: DEPOSIT AUTOMATION AKTIF (FIXED)...\n";
 echo "=====================================================\n";
 
-// Menggunakan tabel 'deposits' atau sesuaikan dengan database Anda
 $cacheDepo = [];
 $initialDepo = DB::table('deposits')->orderBy('id', 'desc')->limit(50)->get();
 foreach($initialDepo as $d) { $cacheDepo[$d->id] = $d->status; }
@@ -38,7 +37,22 @@ while(true) {
                 $cacheDepo[$d->id] = $d->status;
                 $statusUpper = strtoupper($d->status);
                 
-                $user = DB::table('users')->where('name', $d->username)->first();
+                // -- FIX PENCARIAN USER (Otomatis Mendeteksi Struktur Kolom) --
+                $user = null;
+                if (isset($d->username)) {
+                    $user = DB::table('users')->where('name', $d->username)->orWhere('username', $d->username)->first();
+                } elseif (isset($d->user_id)) {
+                    $user = DB::table('users')->where('id', $d->user_id)->first();
+                } elseif (isset($d->id_user)) {
+                    $user = DB::table('users')->where('id', $d->id_user)->first();
+                }
+
+                // Jika user tidak ditemukan di database, lewati pengiriman pesan
+                if (!$user) {
+                    echo "[" . date('H:i:s') . "] ⚠️ [WARNING] Data user tidak ditemukan untuk Deposit ID: " . $d->id . "\n";
+                    continue;
+                }
+
                 $wa = getSmartWa($user);
                 
                 if ($wa) {

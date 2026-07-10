@@ -1,0 +1,10 @@
+{
+  "appId": "com.milastore.official",
+  "appName": "MILASTORE",
+  "webDir": "public/build",
+  "bundledWebRuntime": false,
+  "server": {
+    "url": "https://milastore.cloud",
+    "cleartextTraffic": true
+  }
+}

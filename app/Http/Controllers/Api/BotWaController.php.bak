@@ -75,6 +75,11 @@ class BotWaController extends Controller
     public function handle(Request $request)
     {
             
+            
+
+            
+            
+            
         try {
             date_default_timezone_set('Asia/Jakarta');
             if ($request->header('X-API-KEY') !== $this->botKey) { return response()->json(['status' => false, 'message' => '❌   Akses Ditolak!']); }
@@ -87,130 +92,97 @@ class BotWaController extends Controller
             $indo_num = (substr($no_wa, 0, 2) == "62") ? "0" . substr($no_wa, 2) : $no_wa;
             $user = DB::table('users')->where('whatsapp', $no_wa)->orWhere('phone', $no_wa)->orWhere('phone', $indo_num)->first();
 
-            // --- REAL AI GEMINI & REGISTRASI FIX ---
+            // --- REAL AI & REGISTER SYSTEM ---
+        try {
             $pesanAsli = request('pesan') ?? request('message') ?? request('text') ?? request('msg') ?? '';
-            $pesanBersih = trim($pesanAsli);
+            if (is_array($pesanAsli)) { $pesanAsli = $pesanAsli['text'] ?? $pesanAsli['message'] ?? ''; }
+            if (empty($pesanAsli) && is_array(request('data'))) { $pesanAsli = request('data')['message'] ?? request('data')['text'] ?? ''; }
             
-            // PROTEKSI SIFAT DINAMIS: Ambil nomor WA dari segala kemungkinan parameter gateway
-            $no_wa = request('nomor') ?? request('sender') ?? request('from') ?? request('phone') ?? (isset($no_wa) ? $no_wa : '');
-            $no_wa = preg_replace('/[^0-9]/', '', str_replace('@c.us', '', $no_wa));
+            $pesanBersih = trim((string)$pesanAsli);
+            $parts = explode(' ', $pesanBersih);
+            $cmdAi = strtolower(ltrim($parts[0] ?? '', '.')); 
 
-            if ($pesanBersih !== '' && $no_wa !== '') {
-                $parts = explode(' ', $pesanBersih);
-                $cmdRawAi = strtolower($parts[0] ?? '');
-                $isDotAi = (str_starts_with($pesanBersih, '.'));
-                $cmdAi = ltrim($cmdRawAi, '.');
+            // KITA TIDAK MENDEKLARASIKAN ULANG $command DAN $no_wa
+            // BIARKAN VARIABEL DARI PPOB ATAS MENGALIR BEBAS!
 
-                // ENGINE UTAMAA GEMINI AI (Koneksi Standar & Valid)
-                $callGemini = function($prompt) {
-                    $key = env('GEMINI_API_KEY');
-                    if (empty($key)) return "⚠️ *ERROR API KEY:* Kunci Gemini belum dipasang di file .env!";
-                    try {
-                        $res = \Illuminate\Support\Facades\Http::timeout(15)->post("https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=" . $key, [
-                            'contents' => [['parts' => [['text' => $prompt]]]]
-                        ]);
-                        return $res->json()['candidates'][0]['content']['parts'][0]['text'] ?? null;
-                    } catch (\Exception $e) { 
-                        return "⚠️ *KONEKSI AI TIMEOUT:* Server sedang padat, mohon ulangi beberapa saat lagi Kak."; 
+            if (!empty($no_wa)) {
+                // 1. FITUR LOGIN
+                if ($cmdAi === 'login') {
+                    if (!isset($parts[1]) || empty(trim($parts[1]))) {
+                        return response()->json(['status' => true, 'message' => "✨ *MilaStore* ✨\n━━━━━━━━━━━━━━━━━━━━\n\nHalo Kak!\n\nJika Kakak *SUDAH PUNYA AKUN* (di Web/WA lama) dan ingin pindah ke nomor ini, ketik:\n*.login [Nomor_WA_Lama]*\n_(Contoh: .login 08123456789)_"]);
                     }
-                };
+                    $oldPhone = preg_replace('/[^0-9]/', '', $parts[1]);
+                    $oldPhoneLocal = (substr($oldPhone, 0, 2) == '62') ? '08' . substr($oldPhone, 2) : $oldPhone;
+                    $oldUser = \App\Models\User::where('whatsapp', $oldPhone)->orWhere('phone', $oldPhone)->orWhere('whatsapp', $oldPhoneLocal)->orWhere('phone', $oldPhoneLocal)->first();
+                    
+                    if ($oldUser) {
+                        if ($oldUser->whatsapp == $no_wa || $oldUser->phone == $no_wa) {
+                            return response()->json(['status' => true, 'message' => "Kakak sudah login menggunakan nomor ini! Silakan ketik *menu*."]);
+                        }
+                        $otpCode = rand(100000, 999999);
+                        \App\Models\User::where('id', $oldUser->id)->update(['otp_code' => $otpCode]);
+                        
+                        $targetWaLama = (substr($oldPhone, 0, 1) == '0') ? '62' . substr($oldPhone, 1) : $oldPhone;
+                        $msgOtpLama = "🚨 *PERINGATAN PINDAH AKUN* 🚨\n\nSeseorang mencoba memindahkan akun MILASTORE Anda ke nomor baru.\nGunakan Kode OTP ini: *$otpCode*\n\n_JANGAN BERIKAN KODE INI KEPADA SIAPAPUN!_";
+                        try { \Illuminate\Support\Facades\Http::timeout(3)->post('http://127.0.0.1:3333/send-notif', ['target' => $targetWaLama, 'message' => $msgOtpLama, 'key' => 'SULTAN_MILA_2026']); } catch (\Throwable $e) {}
+                        
+                        return response()->json(['status' => true, 'message' => "✅ *OTP BERHASIL DIKIRIM!*\n━━━━━━━━━━━━━━━━━━━━\n\nKode OTP otorisasi telah dikirim ke WhatsApp lama Kakak.\nBalas pesan ini di nomor baru dengan format:\n*.verifikasi [Kode_OTP]*"]);
+                    } else {
+                        return response()->json(['status' => true, 'message' => "❌ *Nomor tidak ditemukan di database MILASTORE.*"]);
+                    }
+                }
 
-                // ==========================================
-                // BLOK 1: USER BELUM TERDAFTAR (REGISTER)
-                // ==========================================
+                // 2. FITUR VERIFIKASI OTP
+                if ($cmdAi === 'verifikasi' && isset($parts[1])) {
+                    $otpInput = preg_replace('/[^0-9]/', '', $parts[1]);
+                    $checkUser = \App\Models\User::where('otp_code', $otpInput)->whereNotNull('otp_code')->first();
+                    if ($checkUser) {
+                        \App\Models\User::where('id', $checkUser->id)->update(['whatsapp' => $no_wa, 'otp_code' => null, 'status' => 'aktif', 'wa_verified_at' => date('Y-m-d H:i:s')]);
+                        return response()->json(['status' => true, 'message' => "🎉 *MIGRASI AKUN SUKSES!*\n━━━━━━━━━━━━━━━━━━━━\nAkun terhubung dengan nomor WA baru ini! 🚀\nKetik *menu* untuk bertransaksi."]);
+                    }
+                    return response()->json(['status' => true, 'message' => "❌ *Kode OTP Salah atau Kadaluarsa!*"]);
+                }
+
+                // 3. FITUR DAFTAR 1 BARIS
+                if ($cmdAi === 'daftar' || $cmdAi === 'register') {
+                    if ($user) return response()->json(['status' => true, 'message' => "Kakak sudah terdaftar! Ketik *menu* untuk transaksi."]);
+                    if (count($parts) < 3) {
+                        return response()->json(['status' => true, 'message' => "✨ *MilaStore* ✨\n━━━━━━━━━━━━━━━━━━━━\n\nUntuk mendaftar, gunakan format:\n*.daftar email_anda@gmail.com Nama Toko*\n\n_(Contoh: .daftar bosku@gmail.com Sultan Cell)_"]);
+                    }
+                    
+                    $emailBaru = $parts[1];
+                    $namaToko = implode(' ', array_slice($parts, 2));
+                    
+                    if (!filter_var($emailBaru, FILTER_VALIDATE_EMAIL)) return response()->json(['status' => true, 'message' => "❌ Format email tidak valid!"]);
+                    if (\App\Models\User::where('email', $emailBaru)->exists()) return response()->json(['status' => true, 'message' => "❌ Email sudah terdaftar! Ketik *.login* untuk pindah HP."]);
+                    
+                    $newUser = new \App\Models\User();
+                    $newUser->name = $namaToko;
+                    $newUser->email = $emailBaru;
+                    $newUser->whatsapp = $no_wa;
+                    $newUser->phone = $no_wa;
+                    $newUser->password = \Illuminate\Support\Facades\Hash::make('123456');
+                    $newUser->saldo = 0;
+                    $newUser->level = 'Member';
+                    $newUser->status = 'aktif';
+                    $newUser->api_key = \Illuminate\Support\Str::random(30);
+                    $newUser->save();
+                    
+                    return response()->json(['status' => true, 'message' => "🎉 *PENDAFTARAN SUKSES!*\n━━━━━━━━━━━━━━━━━━━━\nSelamat datang, *$namaToko*!\nAkun Kakak berhasil dibuat dan sudah aktif.\n\n🌐 Web: https://milastore.cloud/login\n📧 Email: $emailBaru\n🔑 Password: 123456\n\nKetik *menu* untuk melihat layanan kami. 🚀"]);
+                }
+
+                // 4. MUNCULKAN 2 OPSI JIKA BELUM DAFTAR & KETIK SEMBARANG (Misal: P, Menu)
                 if (!$user) {
-                    if ($cmdAi === 'daftar' || $cmdAi === 'register') {
-                        if (count($parts) < 3) {
-                            return response()->json(['status' => true, 'message' => "Halo Kak! 👋\nFormat pendaftaran belum lengkap.\n\nSilakan ketik:\n`.daftar [Email_Asli] [Nama_Toko]`\n\nContoh:\n`.daftar bosku@gmail.com Bosku Store`"]);
-                        }
-                        
-                        $emailReg = $parts[1];
-                        if (!filter_var($emailReg, FILTER_VALIDATE_EMAIL)) {
-                            return response()->json(['status' => true, 'message' => "❌ Email tidak valid Kak! Pastikan format email benar."]);
-                        }
-                        if (\Illuminate\Support\Facades\DB::table('users')->where('email', $emailReg)->first()) {
-                            return response()->json(['status' => true, 'message' => "❌ Oops, Email ini sudah terdaftar di sistem!"]);
-                        }
-
-                        $namaTokoReg = implode(' ', array_slice($parts, 2));
-                        $otpCode = mt_rand(100000, 999999);
-                        $defaultPassword = 'Mila' . mt_rand(1000, 9999);
-
-                        try {
-                            \Illuminate\Support\Facades\DB::table('users')->insert([
-                                'name' => $namaTokoReg, 'email' => $emailReg, 'whatsapp' => $no_wa, 'phone' => $no_wa,
-                                'password' => \Illuminate\Support\Facades\Hash::make($defaultPassword), 'level' => 'Member',
-                                'saldo' => 0, 'status' => 'pending', 'otp_code' => $otpCode, 'api_key' => \Illuminate\Support\Str::random(30),
-                                'created_at' => date('Y-m-d H:i:s'), 'updated_at' => date('Y-m-d H:i:s')
-                            ]);
-                            return response()->json(['status' => true, 'message' => "🎉 *PENDAFTARAN TAHAP 1 SUKSES!*\n\nData diamankan. Kami telah mengirimkan OTP untuk keamanan.\n\n🔑 *Kode OTP:* `$otpCode`\n\nBalas pesan ini dengan format:\n`.verifikasi $otpCode $defaultPassword`"]);
-                        } catch (\Exception $e) {
-                            return response()->json(['status' => true, 'message' => "❌ *ERROR DATABASE:*\nGagal mendaftar. Hubungi Admin."]);
-                        }
-                    }
-                    
-                    // Jika belum terdaftar tapi langsung nge-chat santai
-                    $aiResp = $callGemini("Kamu CS MilaStore (sistem PPOB & Topup). Ada orang belum terdaftar chat: '$pesanAsli'. Ajak dia daftar dengan sangat ramah dan beri contoh formatnya wajib pakai titik di depan: '.daftar email nama_toko'. Jawab singkat padat.");
-                    if ($aiResp) return response()->json(['status' => true, 'message' => "🤖 *Mila AI - MILASTORE*\n\n" . trim($aiResp)]);
-                    return response()->json(['status' => true, 'message' => "Halo Kak! 👋\nNomor ini belum terdaftar. Yuk daftar dulu, ketik:\n`.daftar email_kakak@gmail.com Nama Toko`"]);
+                    return response()->json(['status' => true, 'message' => "✨ *MilaStore* ✨ \n━━━━━━━━━━━━━━━━━━━━\n\nHalo Kak! 👋\nNomor Anda belum terdaftar di sistem kami.\n\nSilakan pilih salah satu opsi di bawah ini:\n\n1️⃣ *PENGGUNA BARU (DAFTAR)*\nKetik: *.daftar email_anda@gmail.com Nama Toko*\n_(Contoh: .daftar bosku@gmail.com Sultan Cell)_\n\n2️⃣ *PENGGUNA LAMA (PINDAH WA)*\nKetik: *.login*"]);
                 }
-
-                // ==========================================
-                // BLOK 2: USER TERTANAM (PENDING OTP)
-                // ==========================================
-                if ($user->status === 'pending') {
-                    if ($cmdAi === 'verifikasi' && isset($parts[1]) && $parts[1] == $user->otp_code) {
-                        $passWeb = $parts[2] ?? '123456';
-                        \Illuminate\Support\Facades\DB::table('users')->where('id', $user->id)->update([
-                            'status' => 'aktif', 
-                            'otp_code' => null, 
-                            'wa_verified_at' => date('Y-m-d H:i:s')
-                        ]);
-                        
-                        $msgSukses = "🎉 *VERIFIKASI SUKSES!* 🎉\nSelamat datang di MILASTORE, *{$user->name}*!\n\n";
-                        $msgSukses .= "Akun Kakak sudah 100% terhubung ke Website!\n\n";
-                        $msgSukses .= "🌐 *Link Login:* https://milastore.cloud/login\n";
-                        $msgSukses .= "📧 *Email:* {$user->email}\n";
-                        $msgSukses .= "🔑 *Password Web:* `$passWeb`\n\n";
-                        $msgSukses .= "_Silakan login ke web untuk mengubah password default Anda._\n\n";
-                        $msgSukses .= "Ketik *menu* untuk melihat katalog produk dan mulai bertransaksi! 🚀";
-                        return response()->json(['status' => true, 'message' => $msgSukses]);
-                    }
-                    return response()->json(['status' => true, 'message' => "⚠️ *AKUN BELUM AKTIF*\n\nSilakan masukkan kode OTP Kakak.\nKetik: `.verifikasi {$user->otp_code}`"]);
-                }
-
-                // ==========================================
-                // BLOK 3: USER AKTIF (HANDLE CHAT / TYPO PERINTAH)
-                // ==========================================
-                $sysCmds = ['depo', 'order', 'batal', 'menu', 'ping', 'help', 'saldo', 'cek'];
                 
-                // Jika chat bukan perintah sistem, atau perintah sistem tapi lupa titik (misal 'menu' atau 'depo 10k')
-                if (!in_array($cmdAi, $sysCmds) || (in_array($cmdAi, $sysCmds) && !$isDotAi)) {
-                    $prompt = "Kamu Mila AI, asisten virtual resmi dari MilaStore (Aplikasi PPOB & Agen Kuota/Topup). User aktif bernama '{$user->name}' mengirim pesan: '$pesanAsli'. Jawablah dengan super ramah, sopan, dan solutif. Jika user bertanya seputar transaksi atau salah format perintah, ingatkan dengan tegas namun halus bahwa: \n- Isi Saldo wajib diawali titik, ketik: .depo nominal (Contoh: .depo 50000)\n- Beli Produk wajib diawali titik, ketik: .order kode_produk tujuan (Contoh: .order V1 0812345)\n- Melihat Produk wajib diawali titik, ketik: .menu\nSelalu ingatkan mereka untuk menggunakan tanda titik (.) di setiap awal perintah sistem.";
-                    $aiResp = $callGemini($prompt);
-                    
-                    if ($aiResp) {
-                        return response()->json(['status' => true, 'message' => "🤖 *Mila AI - MILASTORE*\n\n" . trim($aiResp)]);
-                    }
-                }
+                // JIKA USER SUDAH DAFTAR, BIARKAN PERINTAH MENGALIR KE SISTEM KONVENSIONAL!
             }
-            // --- END REAL AI ---
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::error("BOT ERROR: " . $e->getMessage());
+        }
+// --- END REAL AI ---
 
-            
-            
-
-            
-
-            
-
-            
-
-            
-
-            
-
-            
-            
             if ($command === 'auto_otp' || $command === 'login') {
                 $otp_input = trim($request->otp ?? '');
                 if ($command === 'auto_otp') {
@@ -228,8 +200,74 @@ class BotWaController extends Controller
                 DB::table('users')->where('id', $userL->id)->update(['otp_code' => $otp, 'otp_expires_at' => now()->addMinutes(30)]);
                 return response()->json(['status' => true, 'target_wa' => $wa_num_login . '@s.whatsapp.net', 'otp_message' => "🔐 *OTP MILASTORE*\n\nKode OTP: *{$otp}*", 'reply_message' => "⏳   OTP terkirim ke WA *{$indo_num_login}*.\n\nBalas dengan *6 digit angka OTP*."]);
             }
-            if (!$user) return response()->json(['status' => false, 'message' => "❌   *SESI BELUM TERHUBUNG*\n\nSilakan login terlebih dahulu.\nKetik: `.login [NOMOR_HP]`\nContoh: `.login 08123456789`"]);
+                        
             
+                        // --- START MASTER GATEWAY V8 (REPLACING OLD LOGIN BLOCK) ---
+            if (!$user) {
+                try {
+                    $pesanAsli = request('pesan') ?? request('message') ?? request('text') ?? request('msg') ?? '';
+                    if (is_array($pesanAsli)) { $pesanAsli = $pesanAsli['text'] ?? $pesanAsli['message'] ?? ''; }
+                    if (empty($pesanAsli) && is_array(request('data'))) { $pesanAsli = request('data')['message'] ?? request('data')['text'] ?? ''; }
+                    $pesanBersih = trim((string)$pesanAsli);
+                    $parts = explode(' ', $pesanBersih);
+                    $cmdAi = ltrim(strtolower($parts[0] ?? ''), '.');
+                    $no_wa = request('nomor') ?? request('sender') ?? request('from') ?? request('phone') ?? request('whatsapp') ?? '';
+                    if (empty($no_wa) && is_array(request('data'))) { $no_wa = request('data')['sender'] ?? request('data')['from'] ?? request('data')['phone'] ?? ''; }
+                    $no_wa = preg_replace('/[^0-9]/', '', str_replace('@c.us', '', (string)$no_wa));
+                    
+                    if (str_starts_with(strtolower($pesanBersih), '.login')) {
+                        return response()->json(['status' => false, 'message' => "❌    *SESI BELUM TERHUBUNG*\n\nSilakan login terlebih dahulu.\nKetik: `.login [NOMOR_HP]`\nContoh: `.login 08123456789`"]);
+                    }
+
+                    if ($cmdAi === 'daftar' || $cmdAi === 'register') {
+                        if (count($parts) < 3) {
+                            return response()->json(['status' => true, 'message' => "✨ *MilaStore* ✨\n━━━━━━━━━━━━━━━━━━━━\n\nHalo Kak! 👋\nNomor Anda belum terdaftar di sistem kami.\n\nSilakan pilih salah satu opsi di bawah ini:\n\n1️⃣ *PENGGUNA BARU (DAFTAR)*\nKetik: *.daftar email_anda@gmail.com Nama Toko*\n_(Contoh: .daftar bosku@gmail.com Sultan Cell)_\n\n2️⃣ *PENGGUNA LAMA (PINDAH WA)*\nKetik: *.login*"]);
+                            }
+                        }
+                    }
+                } catch (\Throwable $e) {
+                    // JIKA ERROR, KIRIMKAN DETAIL ERROR LANGSUNG KE CHAT WHATSAPP USER
+                    return response()->json(['status' => true, 'message' => "🚨 *WA BOT DEBUG ERROR* 🚨\n\n💬 *Pesan Error:* " . $e->getMessage() . "\n📍 *File:* " . $e->getFile() . "\n🔢 *Baris:* " . $e->getLine() . "\n\n💡 _Kirim pesan ini ke AI untuk diperbaiki kolom databasenya!_"]);
+                }
+            }
+
+            if ($user && $user->status === 'pending') {
+                $pesanAsli = request('pesan') ?? request('message') ?? request('text') ?? request('msg') ?? '';
+                if (is_array($pesanAsli)) { $pesanAsli = $pesanAsli['text'] ?? $pesanAsli['message'] ?? ''; }
+                $parts = explode(' ', trim((string)$pesanAsli));
+                $cmdAi = ltrim(strtolower($parts[0] ?? ''), '.');
+                if ($cmdAi === 'verifikasi' && isset($parts[1]) && $parts[1] == $user->otp_code) {
+                    $passWeb = $parts[2] ?? '123456';
+                    \Illuminate\Support\Facades\DB::table('users')->where('id', $user->id)->update(['status' => 'aktif', 'otp_code' => null, 'wa_verified_at' => date('Y-m-d H:i:s')]);
+                    return response()->json(['status' => true, 'message' => "🎉 *VERIFIKASI AKUN BERHASIL!* 🎉\nSelamat bergabung, *{$user->name}*!\n\n🌐 *Akses Web:* https://milastore.cloud/login\n📧 *Email:* {$user->email}\n🔑 *Pass:* `$passWeb`\n\nKetik *.menu* untuk akses katalog bot!"]);
+                }
+                return response()->json(['status' => true, 'message' => "⚠️ *AKUN MENUNGGU AKTIVASI*\n\nHarap verifikasi OTP Anda terlebih dahulu.\nKetik: `.verifikasi {$user->otp_code}`"]);
+            }
+            
+            $pesanAsliAktif = request('pesan') ?? request('message') ?? request('text') ?? request('msg') ?? '';
+            if (is_array($pesanAsliAktif)) { $pesanAsliAktif = $pesanAsliAktif['text'] ?? $pesanAsliAktif['message'] ?? ''; }
+            if (empty($pesanAsliAktif) && is_array(request('data'))) { $pesanAsliAktif = request('data')['message'] ?? request('data')['text'] ?? ''; }
+            $pesanAktifBersih = trim((string)$pesanAsliAktif);
+            $partsAktif = explode(' ', $pesanAktifBersih);
+            $cmdAiAktif = ltrim(strtolower($partsAktif[0] ?? ''), '.');
+            $isDot = str_starts_with($pesanAktifBersih, '.');
+            $sysCmds = ['depo', 'deposit', 'order', 'beli', 'batal', 'menu', 'main_menu', 'menu_xla', 'ping', 'help', 'saldo', 'cek', 'tagihan', 'login'];
+            
+            if ($user && $pesanAktifBersih !== '' && (!in_array($cmdAiAktif, $sysCmds) || (in_array($cmdAiAktif, $sysCmds) && !$isDot))) {
+                if (!preg_match('/^[0-9]{4,6}$/', $pesanAktifBersih)) {
+                    $key = null /* AI KILLED */;
+                    if (!empty($key)) {
+                        try {
+                            $res = \Illuminate\Support\Facades\Http::timeout(10)->post("https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=" . $key, [
+                                'contents' => [['parts' => [['text' => "Kamu Mila AI, CS MilaStore. User '{$user->name}' chat: '$pesanAktifBersih'. Jawab ramah & singkat. Arahkan pakai titik (.) untuk transaksi contoh .menu, .order."]]]]
+                            ]);
+                            $aiResp = $res->json()['candidates'][0]['content']['parts'][0]['text'] ?? null;
+                            if ($aiResp) return response()->json(['status' => true, 'message' => "🤖 *Mila AI - MILASTORE*\n\n" . trim($aiResp)]);
+                        } catch (\Exception $e) {}
+                    }
+                }
+            }
+            // --- END MASTER GATEWAY V8 ---
             // === LOAD DATA ===
             $akrabXla = DB::table('layanan_khfy')->where('kode_layanan', 'like', 'XLA%')->orderBy('harga_jual', 'asc')->get();
             $akrabXda = DB::table('layanan_kaje')->where(fn($q) => $q->where('kode_layanan', 'like', 'KDA%')->orWhere('kode_layanan', 'like', 'PDA%'))->get()->map(function($item) { preg_match('/(\d+)-/i', $item->nama_layanan, $matches); $item->size = isset($matches[1]) ? (int)$matches[1] : 999; return $item; })->sortBy(function($item) { return sprintf('%03d-%010d', $item->size, $item->harga_jual); })->values();

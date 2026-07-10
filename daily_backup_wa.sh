@@ -1,17 +1,17 @@
 #!/bin/bash
 
 # LOAD CONFIG DARI .ENV
-source /www/wwwroot/milastore.web.id/.env
+source /www/wwwroot/milastore.cloud/.env
 
 # SETTING NAMA FILE & TUJUAN
 DATE=$(date +%Y%m%d_%H%M)
 FILE_NAME="MilaStore_DB_$DATE.sql.gz"
-BACKUP_PATH="/www/wwwroot/milastore.web.id/storage/backups/$FILE_NAME"
+BACKUP_PATH="/www/wwwroot/milastore.cloud/storage/backups/$FILE_NAME"
 ADMIN_WA="0859106609838"
 API_KEY="MILA_SEC_v9B4xK8mP2qL7jW5nC3zR1hT6fD0yX5g"
 
 # BUAT FOLDER BACKUP JIKA BELUM ADA
-mkdir -p /www/wwwroot/milastore.web.id/storage/backups/
+mkdir -p /www/wwwroot/milastore.cloud/storage/backups/
 
 # PROSES DUMP DATABASE & COMPRESS
 mysqldump --no-tablespaces -u "$DB_USERNAME" -p"$DB_PASSWORD" "$DB_DATABASE" 2>/dev/null | gzip > "$BACKUP_PATH"

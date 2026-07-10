@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Controllers;
 
 use App\Helpers\OneSignalHelper;
@@ -6,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Http;
 
 class AdminNotificationController extends Controller
 {
@@ -16,75 +18,124 @@ class AdminNotificationController extends Controller
 
     public function send(Request $request)
     {
-        $title = $request->input('title') ?? 'MilaStore';
+        // 🛡️ FITUR 1: Validasi Input Anti-Crash
+        $request->validate([
+            'title' => 'nullable|string|max:100',
+            'body'  => 'required_without:message|string',
+            'time'  => 'nullable|string',
+            'hari'  => 'nullable|string',
+            'target_role' => 'nullable|string',
+            'action_url'  => 'nullable|string'
+        ]);
+
+        $title = $request->input('title') ?? 'MILASTORE INFO';
         $body = $request->input('body') ?? $request->input('message');
         $isAutopilot = $request->input('is_autopilot', false);
+        
         $time = $request->input('time', '08:00');
+        $hari = $request->input('hari', 'Minggu');
+        
+        // 🎯 FITUR 2 & 3: Target Segmen & Link Dinamis (Siap pakai jika form front-end diupdate)
+        $targetRole = $request->input('target_role', 'all'); 
+        $actionUrl = $request->input('action_url', '/notifikasi');
 
-        if (!$body) return back()->with('error', 'Pesan kosong, Bang!');
+        if (!$body) return back()->with('error', 'Pesan kosong, Bosku! Isi dulu!');
 
-        // 🤖 JIKA MODE AUTOPILOT AKTIF: Simpan ke Memori Server
+        // 🤖 MODE AUTOPILOT (TERJADWAL)
         if ($isAutopilot) {
             $data = [
                 'title' => $title,
                 'message' => $body,
                 'time' => $time,
+                'hari' => $hari,
+                'target_role' => $targetRole,
+                'action_url' => $actionUrl,
                 'is_active' => true,
-                'type' => stripos($title, 'promo') !== false ? 'promo' : 'system'
+                'type' => stripos($title, 'promo') !== false ? 'promo' : 'system',
+                'updated_at' => now()->toDateTimeString()
             ];
-            file_put_contents(storage_path('app/autopilot_broadcast.json'), json_encode($data));
-            return back()->with('success', "🤖 AUTOPILOT AKTIF! MilaStore akan menembakkan pesan ini secara otomatis setiap jam {$time} WIB.");
+            file_put_contents(storage_path('app/autopilot_broadcast.json'), json_encode($data, JSON_PRETTY_PRINT));
+            return back()->with('success', "🤖 AUTOPILOT AKTIF! MILASTORE akan menembakkan rudal promo tiap hari {$hari} jam {$time} WIB.");
         }
 
-        // 🚀 JIKA MODE INSTAN: Tembak Sekarang Juga
+        // 🚀 MODE INSTAN (TEMBAK SEKARANG)
         try {
-            $users = DB::table('users')->whereNotNull('email')->get();
-            $countNodeJs = 0;
+            // 📡 1. Tembak Tower Node.js (Android Socket Real-time)
+            try {
+                Http::timeout(3)->post('http://127.0.0.1:3001/trigger-notif', [
+                    'judul' => $title,
+                    'pesan' => $body,
+                    'url'   => $actionUrl
+                ]);
+            } catch (\Exception $e) {
+                Log::error("[MILASTORE TOWER] Node.js Gagal Ditembak: " . $e->getMessage());
+            }
 
+            // 👥 2. Ambil User (Bisa difilter berdasarkan role ke depannya)
+            $usersQuery = DB::table('users')->whereNotNull('email');
+            if ($targetRole !== 'all') {
+                // Contoh: Jika punya kolom 'role' di database
+                // $usersQuery->where('role', $targetRole); 
+            }
+            $users = $usersQuery->get();
+            $countUsers = $users->count();
+
+            // 📨 3. Tembak Email / Notif Sultan Ekstra
             foreach ($users as $user) {
                 try {
                     if(method_exists($this, 'kirimNotifSultan')) {
                         $this->kirimNotifSultan($user->email, $title, $body);
                     }
-                    $countNodeJs++;
                 } catch (\Exception $e) { continue; }
             }
 
+            // 🌐 4. Tembak OneSignal (Web Push)
             try {
                 if (class_exists('App\Helpers\OneSignalHelper')) {
-                    OneSignalHelper::send($title, $body);
+                    OneSignalHelper::send($title, $body, ['url' => $actionUrl]);
                 }
             } catch (\Exception $e) {
-                Log::error("[BROADCAST] OneSignal Web Push Gagal: " . $e->getMessage());
+                Log::error("[MILASTORE PUSH] OneSignal Gagal: " . $e->getMessage());
             }
 
-            $notificationsData = [];
-            foreach ($users as $u) {
-                $notificationsData[] = [
-                    'id' => Str::uuid()->toString(),
-                    'type' => 'App\Notifications\SystemBroadcast',
-                    'notifiable_type' => 'App\Models\User',
-                    'notifiable_id' => $u->id,
-                    'data' => json_encode([
-                        'title' => $title,
-                        'message' => $body,
-                        'icon' => 'fa-bullhorn',
-                        'type' => stripos($title, 'promo') !== false ? 'promo' : 'system',
-                        'url' => '/notifikasi'
-                    ]),
-                    'created_at' => now(),
-                    'updated_at' => now(),
-                ];
+            // 💾 5. Simpan ke Database dengan Transaction Safeguard (Fitur Dewa)
+            DB::beginTransaction();
+            try {
+                $notificationsData = [];
+                $now = now();
+                foreach ($users as $u) {
+                    $notificationsData[] = [
+                        'id' => Str::uuid()->toString(),
+                        'type' => 'App\Notifications\SystemBroadcast',
+                        'notifiable_type' => 'App\Models\User',
+                        'notifiable_id' => $u->id,
+                        'data' => json_encode([
+                            'title' => $title,
+                            'message' => $body,
+                            'icon' => stripos($title, 'promo') !== false ? 'fa-gift' : 'fa-bullhorn',
+                            'type' => stripos($title, 'promo') !== false ? 'promo' : 'system',
+                            'url' => $actionUrl
+                        ]),
+                        'created_at' => $now,
+                        'updated_at' => $now,
+                    ];
+                }
+
+                // Chunk insert agar server RAM tidak jebol jika user puluhan ribu
+                foreach (array_chunk($notificationsData, 500) as $chunk) {
+                    DB::table('notifications')->insert($chunk);
+                }
+                DB::commit();
+            } catch (\Exception $e) {
+                DB::rollBack();
+                Log::error("[MILASTORE DB] Gagal simpan histori notif: " . $e->getMessage());
+                return back()->with('error', 'Pesan terkirim ke HP, tapi gagal tersimpan di history. Hubungi Developer.');
             }
 
-            foreach (array_chunk($notificationsData, 500) as $chunk) {
-                DB::table('notifications')->insert($chunk);
-            }
-
-            return back()->with('success', "🚀 FULL VERSION SULTAN! Rudal mendarat di $countNodeJs HP Android via Custom Socket, dan Web Push sukses dikirim!");
+            return back()->with('success', "🚀 BROADCAST SULTAN SUKSES! Rudal MILASTORE berhasil mendarat di $countUsers member!");
 
         } catch (\Exception $e) {
-            return back()->with('error', 'Duh, sistem macet: ' . $e->getMessage());
+            return back()->with('error', 'Sistem macet parah Bosku: ' . $e->getMessage());
         }
     }
 }

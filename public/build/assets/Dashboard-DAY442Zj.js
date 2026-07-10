@@ -1,1 +1,0 @@
-import{j as e,H as t}from"./app-DO5bQlid.js";import"./sweetalert2.esm.all-BooRRB_8.js";function c({auth:s,stats:a,recent_deposits:r,success:i,error:n}){return e.jsx("div",{className:"p-6 bg-slate-900 min-h-screen text-white",children:e.jsx(t,{title:"Admin Panel"})})}export{c as default};

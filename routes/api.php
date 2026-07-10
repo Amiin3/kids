@@ -47,3 +47,6 @@ Route::middleware([\App\Http\Middleware\ApiAkrabProtected::class])->prefix('v1/a
 });
 
 Route::post('/telegram/webhook', [\App\Http\Controllers\TelegramBotController::class, 'webhook']);
+
+// 🚀 JALUR TIKUS VIP WAR ENGINE MILASTORE (NO AUTH & NO CSRF)
+Route::any('/war-machine/trigger', [\App\Http\Controllers\AdminKhfyController::class, 'warExecute']);

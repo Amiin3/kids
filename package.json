@@ -7,6 +7,7 @@
         "dev": "vite"
     },
     "devDependencies": {
+        "@capacitor/assets": "^3.0.5",
         "@headlessui/react": "^2.0.0",
         "@inertiajs/react": "^2.0.0",
         "@tailwindcss/forms": "^0.5.3",
@@ -23,6 +24,9 @@
         "vite": "^7.0.7"
     },
     "dependencies": {
+        "@capacitor/android": "^8.4.1",
+        "@capacitor/cli": "^7.6.7",
+        "@capacitor/core": "^8.4.1",
         "antd": "^6.4.3",
         "dayjs": "^1.11.21",
         "html2canvas": "^1.4.1",

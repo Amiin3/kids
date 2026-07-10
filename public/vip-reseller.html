@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MILASTORE VIP | Download Center</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap');
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+        body { 
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); 
+            color: #ffffff; 
+            min-height: 100vh; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            overflow: hidden;
+        }
+        .container {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+            animation: fadeIn 1s ease-in-out;
+        }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+        .logo { width: 100px; height: 100px; border-radius: 25px; margin-bottom: 20px; box-shadow: 0 0 20px rgba(0, 212, 255, 0.4); }
+        h1 { font-size: 24px; font-weight: 800; margin-bottom: 5px; background: -webkit-linear-gradient(#00d4ff, #00ff87); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        p { font-size: 14px; color: #94a3b8; margin-bottom: 30px; }
+        .secure-badge { display: inline-block; background: rgba(0, 255, 135, 0.1); color: #00ff87; padding: 5px 15px; border-radius: 20px; font-size: 12px; margin-bottom: 20px; border: 1px solid #00ff87; font-weight: 600; }
+        
+        .btn-download {
+            background: linear-gradient(45deg, #00d4ff, #0072ff);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 16px;
+            font-weight: 600;
+            border-radius: 30px;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 20px rgba(0, 114, 255, 0.3);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .btn-download:hover { transform: scale(1.05); box-shadow: 0 15px 25px rgba(0, 114, 255, 0.5); }
+        .btn-download:disabled { background: #475569; cursor: not-allowed; box-shadow: none; transform: none; }
+        
+        .footer { margin-top: 30px; font-size: 11px; color: #64748b; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <img src="/logo_utama.png" alt="Milastore Logo" class="logo" onerror="this.src='https://placehold.co/100x100/0f172a/00d4ff?text=MILA'">
+        
+        <h1>MILASTORE VIP</h1>
+        <p>Aplikasi Resmi Reseller & Agen</p>
+        
+        <div class="secure-badge">
+            🛡️ Koneksi Terenkripsi & Aman
+        </div>
+
+        <button id="dl-btn" class="btn-download" onclick="startDownload()">UNDUH APLIKASI</button>
+        
+        <div class="footer">
+            &copy; 2026 MILASTORE System. Hak Cipta Dilindungi.<br>
+            Protected by Perisai Sakti
+        </div>
+    </div>
+
+    <script>
+        // ANTI-HACK LAPIS 1: Matikan Klik Kanan
+        document.addEventListener('contextmenu', event => event.preventDefault());
+        
+        // ANTI-HACK LAPIS 2: Matikan tombol F12, Ctrl+Shift+I, Ctrl+U
+        document.onkeydown = function(e) {
+            if(e.keyCode == 123 || 
+              (e.ctrlKey && e.shiftKey && (e.keyCode == 'I'.charCodeAt(0) || e.keyCode == 'J'.charCodeAt(0))) || 
+              (e.ctrlKey && e.keyCode == 'U'.charCodeAt(0))) {
+                return false;
+            }
+        }
+
+        // SISTEM UNDUHAN PENGALIH (Bypass Bot)
+        function startDownload() {
+            let btn = document.getElementById('dl-btn');
+            btn.disabled = true;
+            btn.innerHTML = "Memverifikasi Keamanan... ⏳";
+            
+            // Animasi delay agar terlihat memproses keamanan sebelum memberikan file
+            setTimeout(() => {
+                btn.innerHTML = "Mengunduh File... 🟢";
+                // Mengarahkan langsung ke APK Final Lu
+                window.location.href = "/Milastore_Official.apk";
+                
+                setTimeout(() => {
+                    btn.innerHTML = "UNDUH APLIKASI";
+                    btn.disabled = false;
+                }, 3000);
+            }, 1500);
+        }
+    </script>
+</body>
+</html>
