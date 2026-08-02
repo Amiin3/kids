@@ -1,21 +1,17 @@
 <?php
-
 namespace App\Http\Middleware;
-
 use Closure;
 use Illuminate\Http\Request;
-use Symfony\Component\HttpFoundation\Response;
-
 class IsAdmin
 {
-    public function handle(Request $request, Closure $next): Response
+    public function handle(Request $request, Closure $next)
     {
-        // Cek apakah user sudah login dan punya pangkat 'admin'
-        if (auth()->check() && strtolower(auth()->user()->level) === 'admin') {
+        // Pastikan hanya user yang punya role 'admin' atau level 'admin' yang bisa lewat
+        if (auth()->check() && (auth()->user()->role === 'admin' || auth()->user()->level === 'admin')) {
             return $next($request);
         }
         
-        // Kalau user biasa nyasar ke sini, tendang dengan pesan ini!
-        abort(403, 'BENTENG SENTINEL AKTIF: MAAF, ANDA BUKAN KOMANDAN!');
+        // JIKA BUKAN ADMIN: Pura-pura halamannya tidak ada (404) agar scanner bingung!
+        abort(404);
     }
 }

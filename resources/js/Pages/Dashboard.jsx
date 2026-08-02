@@ -79,7 +79,7 @@ export default function Dashboard({ auth, recentTransactions = [], userBalance =
     const renderAppIcon = (iconString) => {
         if (!iconString) return <i className="fa-solid fa-circle relative z-10"></i>;
         if (iconString.includes('/') || iconString.includes('http')) {
-            return <img src={iconString} alt="icon" className="w-full h-full object-contain p-2 relative z-10 drop-shadow-md" />;
+            return <img src={iconString} alt="icon" className="w-full h-full object-cover relative z-10 drop-shadow-md" />;
         }
         return <i className={`fa-solid ${iconString} relative z-10`}></i>;
     };
@@ -87,7 +87,7 @@ export default function Dashboard({ auth, recentTransactions = [], userBalance =
     const renderAdminIcon = (iconString) => {
         if (!iconString) return <i className="fa-solid fa-circle text-sm"></i>;
         if (iconString.includes('/') || iconString.includes('http')) {
-            return <img src={iconString} alt="icon" className="w-full h-full object-contain p-1.5 drop-shadow-sm" />;
+            return <img src={iconString} alt="icon" className="w-full h-full object-cover drop-shadow-sm" />;
         }
         return <i className={`fa-solid ${iconString} text-sm`}></i>;
     };

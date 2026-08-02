@@ -34,7 +34,7 @@ class RiwayatController extends Controller {
             ->where(function($q) use ($user) {
                 $q->where('username', $user->name);
                 if (!empty($user->username)) {
-                    $q->orWhere('username', $user->name);
+                    $q->orWhere('username', $user->username);
                 }
             });
 
@@ -61,7 +61,6 @@ class RiwayatController extends Controller {
                 $q1->whereIn('status', ['Gagal', 'Failed', 'Error', 'Batal']);
                 $q2->whereIn('status', ['Gagal', 'Failed', 'Error', 'Batal']);
             } elseif ($statusFilter === 'Pending') {
-                // Yang bukan sukses dan bukan gagal berarti pending/proses
                 $q1->whereNotIn('status', ['Sukses', 'Success', 'Berhasil', 'Gagal', 'Failed', 'Error', 'Batal']);
                 $q2->whereNotIn('status', ['Sukses', 'Success', 'Berhasil', 'Gagal', 'Failed', 'Error', 'Batal']);
             }

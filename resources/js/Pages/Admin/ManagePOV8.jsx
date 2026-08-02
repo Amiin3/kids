@@ -70,6 +70,30 @@ export default function ManagePOV8({ auth, antrean, mode }) {
         });
     };
 
+    
+    // --- START AUTO WAR ENGINE LOGIC ---
+    React.useEffect(() => {
+        let interval;
+        if (currentMode === 'auto' && antrean.length > 0 && !isProcessing) {
+            // Nembak otomatis setiap 3 detik ke antrean pertama
+            interval = setInterval(() => {
+                const target = antrean[0];
+                if (target) {
+                    setIsProcessing(true);
+                    axios.post(`/admin/po-v8/retry/${target.id}`).then(res => {
+                        setIsProcessing(false);
+                        // Reload data senyap biar gak jeda
+                        router.reload({ preserveScroll: true, preserveState: true });
+                    }).catch(err => {
+                        setIsProcessing(false);
+                    });
+                }
+            }, 3000); // 3000 = 3 Detik (Kecepatan Brutal)
+        }
+        return () => clearInterval(interval);
+    }, [currentMode, antrean, isProcessing]);
+    // --- END AUTO WAR ENGINE LOGIC ---
+    
     return (
         <AuthenticatedLayout user={auth.user}>
             <Head title="Admin PO Command Center" />

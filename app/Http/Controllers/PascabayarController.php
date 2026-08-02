@@ -1,221 +1,217 @@
 <?php
+
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Inertia\Inertia;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Http;
-use App\Models\User;
+use App\Services\DigiflazzService;
+use Inertia\Inertia;
+use Exception;
 
 class PascabayarController extends Controller
 {
-    public function index()
-    {
-        $products = DB::table('layanan')
-            ->where('tipe', 'like', '%pasca%')
-            ->orWhere('tipe', 'like', '%postpaid%')
-            ->get();
+    protected $digiflazz;
+    
+    public function __construct(DigiflazzService $digiflazz) {
+        $this->digiflazz = $digiflazz;
+    }
+
+    public function index() {
+        $digi = DB::table('layanan')->where('status', 'active')->where(function($q) {
+            $q->where('tipe', 'LIKE', '%pasca%')->orWhere('tipe', 'LIKE', '%postpaid%')->orWhere('nama_layanan', 'LIKE', '%pasca%')->orWhere('nama_layanan', 'LIKE', '%pascabayar%')->orWhere('nama_layanan', 'LIKE', '%tagihan%')->orWhere('nama_layanan', 'LIKE', '%bpjs%')->orWhere('nama_layanan', 'LIKE', '%pdam%');
+        })->get()->map(function($item) { $item->server = 'DIGIFLAZZ'; return $item; });
         
+        $oke = DB::table('layanan_okeconnect')->where('status', 'active')->where(function($q) {
+            $q->where('tipe', 'LIKE', '%pasca%')->orWhere('tipe', 'LIKE', '%postpaid%')->orWhere('nama_layanan', 'LIKE', '%pasca%')->orWhere('nama_layanan', 'LIKE', '%pascabayar%')->orWhere('nama_layanan', 'LIKE', '%tagihan%')->orWhere('nama_layanan', 'LIKE', '%bpjs%')->orWhere('nama_layanan', 'LIKE', '%pdam%');
+        })->get()->map(function($item) { $item->server = 'OKECONNECT'; return $item; });
+        
+        $products = collect($digi)->merge($oke)->sortBy('nama_layanan')->values();
+        
+        $grouped = ['PLN Pasca' => [], 'PDAM' => [], 'BPJS' => [], 'HP Pasca' => [], 'Internet / Telkom' => [], 'Lainnya' => []];
+        $pdamRegions = ['DKI JAKARTA & JABODETABEK' => [], 'JAWA BARAT' => [], 'JAWA TENGAH & DIY' => [], 'JAWA TIMUR' => [], 'SUMATERA' => [], 'BALI, NTB & NTT' => [], 'KALIMANTAN & SULAWESI' => [], 'WILAYAH LAINNYA' => []];
+
+        foreach ($products as $p) {
+            $name = strtoupper($p->nama_layanan);
+            if (str_contains($name, 'PLN') || str_contains($name, 'LISTRIK')) $grouped['PLN Pasca'][] = $p;
+            elseif (str_contains($name, 'BPJS')) $grouped['BPJS'][] = $p;
+            elseif (str_contains($name, 'HALO') || str_contains($name, 'MATRIX') || str_contains($name, 'PRIORITAS') || str_contains($name, 'XL') || str_contains($name, 'TELKOMSEL')) $grouped['HP Pasca'][] = $p;
+            elseif (str_contains($name, 'TELKOM') || str_contains($name, 'INDIHOME') || str_contains($name, 'WIFI')) $grouped['Internet / Telkom'][] = $p;
+            elseif (str_contains($name, 'PDAM') || str_contains($name, 'PAM') || str_contains($name, 'AETR')) {
+                if (str_contains($name, 'JAKARTA') || str_contains($name, 'JAKTIM') || str_contains($name, 'BOGOR') || str_contains($name, 'DEPOK') || str_contains($name, 'TANGERANG') || str_contains($name, 'BEKASI')) $pdamRegions['DKI JAKARTA & JABODETABEK'][] = $p;
+                elseif (str_contains($name, 'BANDUNG') || str_contains($name, 'CIREBON') || str_contains($name, 'GARUT') || str_contains($name, 'TASIK') || str_contains($name, 'KARAWANG') || str_contains($name, 'SUKABUMI') || str_contains($name, 'CIANJUR') || str_contains($name, 'SUBANG') || str_contains($name, 'PURWAKARTA') || str_contains($name, 'INDRAMAYU')) $pdamRegions['JAWA BARAT'][] = $p;
+                elseif (str_contains($name, 'SEMARANG') || str_contains($name, 'SURAKARTA') || str_contains($name, 'SOLO') || str_contains($name, 'JOGJA') || str_contains($name, 'YOGYAKARTA') || str_contains($name, 'TEGAL') || str_contains($name, 'PEKALONGAN') || str_contains($name, 'MAGELANG') || str_contains($name, 'SALATIGA') || str_contains($name, 'PURWOREJO') || str_contains($name, 'CILACAP') || str_contains($name, 'BANYUMAS')) $pdamRegions['JAWA TENGAH & DIY'][] = $p;
+                elseif (str_contains($name, 'SURABAYA') || str_contains($name, 'MALANG') || str_contains($name, 'SIDOARJO') || str_contains($name, 'GRESIK') || str_contains($name, 'JEMBER') || str_contains($name, 'KEDIRI') || str_contains($name, 'BANYUWANGI') || str_contains($name, 'MADIUN') || str_contains($name, 'PROBOLINGGO') || str_contains($name, 'PASURUAN')) $pdamRegions['JAWA TIMUR'][] = $p;
+                elseif (str_contains($name, 'MEDAN') || str_contains($name, 'PALEMBANG') || str_contains($name, 'PADANG') || str_contains($name, 'PEKANBARU') || str_contains($name, 'JAMBI') || str_contains($name, 'LAMPUNG') || str_contains($name, 'BENGKULU') || str_contains($name, 'ACEH') || str_contains($name, 'BATAM') || str_contains($name, 'TANJUNGPINANG')) $pdamRegions['SUMATERA'][] = $p;
+                elseif (str_contains($name, 'BALI') || str_contains($name, 'DENPASAR') || str_contains($name, 'MATARAM') || str_contains($name, 'KUPANG') || str_contains($name, 'LOMBOK')) $pdamRegions['BALI, NTB & NTT'][] = $p;
+                elseif (str_contains($name, 'BANJARMASIN') || str_contains($name, 'BALIKPAPAN') || str_contains($name, 'SAMARINDA') || str_contains($name, 'PONTIANAK') || str_contains($name, 'MAKASSAR') || str_contains($name, 'MANADO') || str_contains($name, 'PALU') || str_contains($name, 'KENDARI')) $pdamRegions['KALIMANTAN & SULAWESI'][] = $p;
+                else $pdamRegions['WILAYAH LAINNYA'][] = $p;
+            } else $grouped['Lainnya'][] = $p;
+        }
+
+        $pdamRegions = array_filter($pdamRegions, function($arr) { return count($arr) > 0; });
+        $grouped['PDAM'] = $pdamRegions;
+        $grouped = array_filter($grouped, function($arr) { return count($arr) > 0; });
+
         return Inertia::render('Order/Pascabayar', [
-            'products' => $products,
-            'userBalance' => auth()->user()->saldo ?? auth()->user()->balance ?? 0
+            'groupedProducts' => $grouped,
+            'userBalance' => DB::table('users')->where('id', auth()->id())->value('saldo') ?? 0
         ]);
     }
 
-    // 🧠 FUNGSI 1: INQUIRY (MENCARI PROMO / CEK TAGIHAN)
-    public function inquiry(Request $request)
-    {
-        $request->validate([
-            'tujuan' => 'required',
-            'kode_layanan' => 'required'
-        ]);
+    public function inquiry(Request $request) {
+        $kodeLayanan = strip_tags($request->input('kode_layanan'));
+        $tujuan = preg_replace('/[^0-9]/', '', $request->input('tujuan'));
+        $server = strip_tags($request->input('server'));
 
-        $nama_layanan = DB::table('layanan')->where('kode_layanan', $request->kode_layanan)->value('nama_layanan') ?? '';
-        $nama_layanan_lower = strtolower($nama_layanan);
+        if (!$kodeLayanan || empty($tujuan) || !$server) return response()->json(['success' => false, 'message' => 'Data tagihan tidak lengkap.'], 400);
 
-        // 🎯 DETEKSI JALUR KODEBAYAR
-        $isKodebayar = str_contains($nama_layanan_lower, 'indosat') || str_contains($nama_layanan_lower, 'telkomsel') || str_contains($nama_layanan_lower, 'omni') || str_contains($nama_layanan_lower, 'only');
+        $product = $server === 'OKECONNECT' ? DB::table('layanan_okeconnect')->where('kode_layanan', $kodeLayanan)->first() : DB::table('layanan')->where('kode_layanan', $kodeLayanan)->first();
+        if (!$product) return response()->json(['success' => false, 'message' => 'Produk tagihan tidak ditemukan.'], 404);
 
-        if ($isKodebayar) {
-            $provider = str_contains($nama_layanan_lower, 'indosat') ? 'INDOSAT' : 'TELKOMSEL';
-            
+        if ($server === 'OKECONNECT') {
+            // OKECONNECT INQUIRY = Transaksi Nyata, deduct balance jika Cek Tagihan ada harganya (misal Rp500)
+            $realPrice = $product->harga_jual ?? 0;
+            $userId = auth()->id();
+            $refId = 'INQ' . time() . rand(10,99);
+
+            DB::beginTransaction();
             try {
-                $kb_response = Http::post('https://kodebayar.web.id/v2/list_paket', [
-                    'apikey' => env('KODEBAYAR_API_KEY'),
-                    'provider' => $provider,
-                    'menu_id' => '', 
-                    'dest' => $request->tujuan,
-                    'noreff' => 'INQ-' . time()
-                ]);
-
-                $kb_res = $kb_response->json();
-
-                // 🚨 LOGIKA PINTAR: Cek apakah promonya kosong []
-                if (isset($kb_res['status']) && $kb_res['status'] === true) {
-                    
-                    if (empty($kb_res['data'])) {
-                        // Jika promo kosong, tampilkan pesan elegan!
-                        return response()->json([
-                            'success' => false,
-                            'message' => 'Nomor ini sedang tidak memiliki promo eksklusif (' . $provider . ' Only For You). Silakan coba nomor lain.'
-                        ]);
-                    }
-
-                    // JIKA ADA PROMO, KONVERSI DATA & TAMBAHKAN ADMIN RP 500
-                    $promo_list = [];
-                    foreach ($kb_res['data'] as $promo) {
-                        \Illuminate\Support\Facades\Cache::put('kdb_' . $request->tujuan . '_' . $promo['code'], $promo['price'] + 500, now()->addMinutes(30));
-$promo_list[] = [
-                            'kode_promo' => $promo['code'], 
-                            'nama_promo' => $promo['name'],
-                            'harga' => $promo['price'] + 500 
-                        ];
-                    }
-
-                    return response()->json([
-                        'success' => true,
-                        'data' => [
-                            'customer_no' => $kb_res['dest'],
-                            'customer_name' => 'Promo ' . $provider,
-                            'buyer_sku_code' => $request->kode_layanan, 
-                            'selling_price' => 0,
-                            'desc' => ['detail' => $promo_list] 
-                        ],
-                        'ref_id' => 'KDB-' . time() 
-                    ]);
-                } else {
-                    return response()->json([
-                        'success' => false,
-                        'message' => $kb_res['statusDesc'] ?? 'Koneksi API Gagal.'
-                    ]);
+                $user = DB::table('users')->where('id', $userId)->lockForUpdate()->first();
+                if ((float)$user->saldo < $realPrice) {
+                    DB::rollBack();
+                    return response()->json(['success' => false, 'message' => 'Saldo tidak cukup untuk biaya pengecekan.'], 400);
                 }
-            } catch (\Exception $e) {
-                return response()->json(['success' => false, 'message' => 'Koneksi ke Kodebayar Terputus.']);
-            }
-        }
-
-        // 🎯 JALUR NORMAL DIGIFLAZZ (PLN, BPJS, DLL)
-        $username = env('DIGIFLAZZ_USERNAME');
-        $apiKey = env('DIGIFLAZZ_API_KEY');
-        $ref_id = "INQ-" . time(); 
-        $sign = md5($username . $apiKey . $ref_id);
-
-        try {
-            $response = Http::timeout(30)->post('https://api.digiflazz.com/v1/transaction', [
-                'commands' => 'inq-pasca',
-                'username' => $username,
-                'buyer_sku_code' => $request->kode_layanan,
-                'customer_no' => $request->tujuan,
-                'ref_id' => $ref_id,
-                'sign' => $sign
-            ]);
-
-            $res = $response->json();
-            $rc = $res['data']['rc'] ?? 'XX';
-            
-            if (isset($res['data']['status']) && ($res['data']['status'] == 'Sukses' || $rc == '00')) {
-                return response()->json([
-                    'success' => true,
-                    'data' => $res['data'],
-                    'ref_id' => $ref_id 
+                if ($realPrice > 0) DB::table('users')->where('id', $userId)->decrement('saldo', $realPrice);
+                
+                DB::table('transaksi')->insertGetId([
+                    'ref_id' => $refId, 'username' => $user->name, 'kode_layanan' => $product->kode_layanan, 
+                    'tujuan' => $tujuan, 'harga' => $realPrice, 'status' => 'Pending', 'created_at' => now(), 'updated_at' => now()
                 ]);
-                \Illuminate\Support\Facades\Cache::put('digi_' . $ref_id, $res['data']['selling_price'] ?? 0, now()->addMinutes(30));
-            } else {
-                return response()->json(['success' => false, 'message' => "[Kode: $rc] " . ($res['data']['message'] ?? 'Gagal.')]);
+                DB::commit();
+            } catch (Exception $e) {
+                DB::rollBack();
+                return response()->json(['success' => false, 'message' => 'Sistem sibuk.'], 500);
             }
-        } catch (\Exception $e) {
-            return response()->json(['success' => false, 'message' => 'Koneksi API Digiflazz terputus.']);
+
+            try {
+                $response = Http::timeout(60)->get("https://h2h.okeconnect.com/trx", [
+                    'memberID' => env('OKECONNECT_MEMBER_ID'), 'pin' => env('OKECONNECT_PIN'), 
+                    'password' => env('OKECONNECT_PASSWORD'), 'product' => $product->kode_layanan, 
+                    'dest' => $tujuan, 'refID' => $refId
+                ]);
+                
+                $bodyLower = strtolower($response->body());
+                if (str_contains($bodyLower, 'gagal') || str_contains($bodyLower, 'salah') || str_contains($bodyLower, 'ditolak') || str_contains($bodyLower, 'tidak cukup')) {
+                    DB::transaction(function () use ($userId, $refId, $realPrice, $response) {
+                        if ($realPrice > 0) DB::table('users')->where('id', $userId)->increment('saldo', $realPrice);
+                        DB::table('transaksi')->where('ref_id', $refId)->update(['status' => 'Gagal', 'sn' => substr($response->body(), 0, 100), 'updated_at' => now()]);
+                    });
+                    return response()->json(['success' => false, 'message' => trim(preg_replace('/(?:\.?\s*)Saldo\s+.*$/i', '', $response->body()))], 400);
+                }
+
+                return response()->json(['success' => true, 'is_polling' => true, 'ref_id' => $refId, 'message' => 'Menunggu Webhook...']);
+            } catch (Exception $e) {
+                return response()->json(['success' => true, 'is_polling' => true, 'ref_id' => $refId]);
+            }
+        } else {
+            // DIGIFLAZZ INQUIRY (Langsung / Synchronous)
+            $refId = 'INQ' . time() . rand(10,99);
+            $inquiry = $this->digiflazz->inquiry($refId, $tujuan, $product->kode_layanan);
+            if (isset($inquiry['success']) && $inquiry['success']) {
+                return response()->json(['success' => true, 'is_polling' => false, 'data' => $inquiry['data']]);
+            } else {
+                return response()->json(['success' => false, 'message' => $inquiry['message'] ?? 'Gagal cek tagihan.'], 400);
+            }
         }
     }
 
-    // 🧠 FUNGSI 2: BAYAR (H2H KODEBAYAR -> DIGIFLAZZ)
-    public function pay(Request $request)
-    {
-        $request->validate([
-            'tujuan' => 'required',
-            'kode_layanan' => 'required',
-            'ref_id' => 'required',
-            'harga' => 'required|numeric'
-        ]);
-
-                $user = User::where('id', auth()->id())->lockForUpdate()->first();
+    public function poll(Request $request) {
+        $refId = strip_tags($request->input('ref_id'));
+        $trx = DB::table('transaksi')->where('ref_id', $refId)->first();
         
-        // 🛡️ BENTENG SENTINEL (Ambil Harga Asli dari Brankas Server)
-        $harga_asli = $request->filled('kodebayar_code') 
-            ? \Illuminate\Support\Facades\Cache::get('kdb_' . $request->tujuan . '_' . $request->kodebayar_code) 
-            : \Illuminate\Support\Facades\Cache::get('digi_' . $request->ref_id);
+        if (!$trx) return response()->json(['status' => 'pending']);
+        
+        if ($trx->status === 'Sukses') {
+            $sn = $trx->sn ?? '';
+            
+            // 🧠 AI Regex Cerdas: Mengurai pesan Webhook (Cari Nama & Total Tagihan Asli)
+            $customerName = 'Pelanggan / ' . substr($sn, 0, 15);
+            $sellingPrice = 0;
 
-        if (!$harga_asli || $harga_asli <= 0) {
-            return back()->with('error', '🚨 Sesi tagihan kadaluarsa atau HARGA DIMANIPULASI! Silakan Cek Tagihan ulang dari awal.');
-        }
+            if (preg_match('/(?:nama|a\/n)\s*[:=]?\s*([a-zA-Z0-9\s\.\*\'\"]+?)(?:,|\/|-|tagihan|rp|bln|total|no|$)/i', $sn, $matchName)) {
+                $customerName = trim($matchName[1]);
+            }
 
-        $saldo_user = $user->saldo ?? $user->balance ?? 0;
-        if ($saldo_user < $harga_asli) {
-            return back()->with('error', 'Saldo tidak mencukupi untuk tagihan ini.');
+            if (preg_match('/(?:tagihan|total|rp\.?)\s*[:=]?\s*([0-9\.,]+)/i', $sn, $matchPrice)) {
+                $sellingPrice = (float) preg_replace('/[^0-9]/', '', $matchPrice[1]);
+            }
+            
+            if ($sellingPrice <= 0) $sellingPrice = $trx->harga;
+
+            return response()->json([
+                'status' => 'sukses',
+                'data' => [
+                    'customer_name' => $customerName,
+                    'selling_price' => $sellingPrice,
+                    'desc' => $sn
+                ]
+            ]);
+        } elseif ($trx->status === 'Gagal') {
+            return response()->json(['status' => 'gagal', 'message' => $trx->sn]);
         }
+        
+        return response()->json(['status' => 'pending']);
+    }
+
+    public function pay(Request $request) {
+        $kodeLayanan = strip_tags($request->input('kode_layanan'));
+        $tujuan = preg_replace('/[^0-9]/', '', $request->input('tujuan'));
+        $server = strip_tags($request->input('server'));
+        $amount = (float) $request->input('amount', 0);
+
+        if (!$kodeLayanan || empty($tujuan) || !$server || $amount <= 0) return response()->json(['success' => false, 'message' => 'Data pembayaran tidak valid.'], 400);
+
+        $product = $server === 'OKECONNECT' ? DB::table('layanan_okeconnect')->where('kode_layanan', $kodeLayanan)->first() : DB::table('layanan')->where('kode_layanan', $kodeLayanan)->first();
+        if (!$product) return response()->json(['success' => false, 'message' => 'Produk tidak ditemukan.'], 404);
+
+        $userId = auth()->id();
+        $refId = 'PAY' . time() . rand(10,99);
 
         DB::beginTransaction();
         try {
-            if (isset($user->saldo)) $user->saldo -= $harga_asli;
-            else $user->balance -= $harga_asli;
-            $user->save();
-
-            $final_target_number = $request->tujuan;
-
-            if ($request->filled('kodebayar_code')) {
-                $kb_req = Http::post('https://kodebayar.web.id/v2/order', [
-                    'apikey' => env('KODEBAYAR_API_KEY'),
-                    'noreff' => $request->ref_id,
-                    'code' => $request->kodebayar_code 
-                ]);
-
-                $kb_res = $kb_req->json();
-
-                if (!isset($kb_res['status']) || $kb_res['status'] !== true) {
-                    DB::rollBack();
-                    return back()->with('error', 'Gagal Generate Kode Bayar: ' . ($kb_res['statusDesc'] ?? 'Gangguan'));
-                }
-
-                $final_target_number = $kb_res['payment_code']; 
-            }
-
-            DB::table('transaksi')->insert([
-                'ref_id' => $request->ref_id,
-                'username' => $user->username ?? $user->name,
-                'kode_layanan' => $request->kode_layanan,
-                'tujuan' => $final_target_number, 
-                'harga' => $harga_asli,
-                'status' => 'Proses',
-                'sn' => 'Proses Pembayaran Server',
-                'tanggal' => now(),
-            ]);
-
-            $username = env('DIGIFLAZZ_USERNAME');
-            $apiKey = env('DIGIFLAZZ_API_KEY');
-            $sign = md5($username . $apiKey . $request->ref_id);
-
-            $response = Http::timeout(30)->post('https://api.digiflazz.com/v1/transaction', [
-                'commands' => 'pay-pasca',
-                'username' => $username,
-                'buyer_sku_code' => $request->kode_layanan, 
-                'customer_no' => $final_target_number, 
-                'ref_id' => $request->ref_id,
-                'sign' => $sign
-            ]);
-
-            $res = $response->json();
-            
-            if (isset($res['data']['status']) && $res['data']['status'] == 'Gagal') {
-                DB::rollBack();
-                return back()->with('error', 'Pembayaran Digiflazz Gagal: ' . ($res['data']['message'] ?? 'Hubungi Admin'));
-            }
-
+            $user = DB::table('users')->where('id', $userId)->lockForUpdate()->first();
+            if ((float)$user->saldo < $amount) { DB::rollBack(); return response()->json(['success' => false, 'message' => 'Saldo tidak mencukupi untuk membayar tagihan.'], 400); }
+            DB::table('users')->where('id', $userId)->decrement('saldo', $amount);
+            DB::table('transaksi')->insertGetId(['ref_id' => $refId, 'username' => $user->name, 'kode_layanan' => $product->kode_layanan, 'tujuan' => $tujuan, 'harga' => $amount, 'status' => 'Pending', 'created_at' => now(), 'updated_at' => now()]);
             DB::commit();
-            return back()->with('success', 'Transaksi berhasil diproses oleh server!');
+        } catch (Exception $e) {
+            DB::rollBack(); return response()->json(['success' => false, 'message' => 'Sistem sibuk. Coba lagi.'], 500);
+        }
 
-        } catch (\Exception $e) {
-            DB::rollBack();
-            return back()->with('error', 'Sistem Error: Gagal memproses jalur H2H.');
+        try {
+            $isSuccess = false; $pesan = '';
+            if ($server === 'OKECONNECT') {
+                $response = Http::timeout(60)->get("https://h2h.okeconnect.com/trx", ['memberID' => env('OKECONNECT_MEMBER_ID'), 'pin' => env('OKECONNECT_PIN'), 'password' => env('OKECONNECT_PASSWORD'), 'product' => $product->kode_layanan, 'dest' => $tujuan, 'refID' => $refId]);
+                $isSuccess = $response->successful(); $pesan = $response->body();
+            } else {
+                $payRes = $this->digiflazz->placeOrder($refId, $tujuan, $product->kode_layanan);
+                $isSuccess = $payRes['success'] ?? false; $pesan = $payRes['message'] ?? 'Proses pascabayar.';
+            }
+
+            if (!$isSuccess) {
+                DB::transaction(function () use ($userId, $refId, $amount, $pesan) {
+                    DB::table('users')->where('id', $userId)->increment('saldo', $amount);
+                    DB::table('transaksi')->where('ref_id', $refId)->update(['status' => 'Gagal', 'sn' => substr($pesan, 0, 100), 'updated_at' => now()]);
+                });
+                return response()->json(['success' => false, 'message' => 'Pembayaran gagal: ' . substr($pesan, 0, 100)], 400);
+            }
+
+            DB::table('transaksi')->where('ref_id', $refId)->update(['status' => 'Sukses', 'sn' => 'LUNAS', 'updated_at' => now()]);
+            return response()->json(['success' => true, 'message' => 'Pembayaran Tagihan Berhasil!']);
+        } catch (Exception $e) {
+            return response()->json(['success' => true, 'message' => 'Pembayaran dikirim ke latar belakang.']);
         }
     }
 }

@@ -328,10 +328,11 @@ Route::middleware(['web', 'auth', 'verified', \App\Http\Middleware\AntiMalingSes
     Route::middleware([\App\Http\Middleware\IsAdmin::class])->prefix('admin/adammedia')->group(function () {
         Route::get('/', [\App\Http\Controllers\Admin\AdammediaController::class, 'index'])->name('admin.adammedia.index');
         Route::post('/sync', [\App\Http\Controllers\Admin\AdammediaController::class, 'sync'])->name('admin.adammedia.sync');
+        Route::post('/auto-price', [\App\Http\Controllers\Admin\AdammediaController::class, 'autoPriceUpdate'])->name('admin.adammedia.auto-price');
         Route::post('/update/{id}', [\App\Http\Controllers\Admin\AdammediaController::class, 'update'])->name('admin.adammedia.update-product');
         Route::post('/ticket', [\App\Http\Controllers\Admin\AdammediaController::class, 'ticket'])->name('admin.adammedia.ticket');
     });
-    Route::get('/riwayat', [\App\Http\Controllers\RiwayatController::class, 'index'])->name('riwayat');
+    // // DIMATIKAN KARENA BENTROK ANTI-MALING (LOGOUT BUG)
     Route::get('/akrabv8', [\App\Http\Controllers\OrderController::class, 'index'])->name('order.akrabv8.lama');
     Route::post('/akrabv8/process', [\App\Http\Controllers\OrderController::class, 'process']);
 });
@@ -699,3 +700,56 @@ Route::get('/download-vault/{token}', function ($token) {
 });
 
 Route::post('/admin/khfy/update-single', [\App\Http\Controllers\AdminKhfyController::class, 'updateSingle'])->name('admin.khfy.update_single')->middleware(['web', 'auth']);
+
+
+
+
+// Endpoint POST (Transaksi) kita lindungi dengan Throttle (Max 15 hit / 1 menit) mencegah spam / brute-force saldo!
+Route::middleware(['web', 'auth', 'verified', \App\Http\Middleware\AntiMalingSession::class, 'throttle:15,1'])->group(function () {
+    Route::post('/order/pulsa/store', [\App\Http\Controllers\OrderPulsaController::class, 'store'])->name('order.pulsa.store');
+    Route::post('/order/data/store', [\App\Http\Controllers\OrderDataController::class, 'store'])->name('order.data.store');
+});
+
+// === INJEKSI RUTE MILASTORE V12 (PULSA & DATA) ===
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('/order/pulsa', [\App\Http\Controllers\OrderPulsaController::class, 'index'])->name('order.pulsa');
+    Route::post('/order/pulsa/store', [\App\Http\Controllers\OrderPulsaController::class, 'store'])->name('order.pulsa.store');
+
+    Route::get('/order/data', [\App\Http\Controllers\OrderDataController::class, 'index'])->name('order.data');
+    Route::post('/order/data/store', [\App\Http\Controllers\OrderDataController::class, 'store'])->name('order.data.store');
+});
+
+// 🛡️ JALUR RIWAYAT AMAN (Fix Bug Tendangan Login)
+// 🐛 JALUR DEBUG RIWAYAT BEBAS HAMBATAN
+Route::get('/riwayat', [\App\Http\Controllers\RiwayatController::class, 'index'])->name('riwayat');
+
+// 🔄 RADAR POLLING PASCABAYAR
+Route::post('/order/pascabayar/poll', [\App\Http\Controllers\PascabayarController::class, 'poll'])->name('order.pascabayar.poll')->middleware(['web', 'auth']);
+
+// 🚀 MENU VOUCHER
+Route::get('/order/voucher', [\App\Http\Controllers\OrderVoucherController::class, 'index'])->name('order.voucher')->middleware(['web', 'auth']);
+Route::post('/order/voucher', [\App\Http\Controllers\OrderVoucherController::class, 'store'])->middleware(['web', 'auth']);
+
+// 🚀 MENU MASA AKTIF
+Route::get('/order/masa-aktif', [\App\Http\Controllers\OrderMasaAktifController::class, 'index'])->name('order.masa-aktif')->middleware(['web', 'auth']);
+Route::post('/order/masa-aktif', [\App\Http\Controllers\OrderMasaAktifController::class, 'store'])->middleware(['web', 'auth']);
+
+// 👑 ADMIN KONTROL: OKECONNECT MANAGER (SYNCED WITH CONTROLLER)
+Route::middleware(['auth', 'verified', \App\Http\Middleware\IsAdmin::class])->prefix('admin')->group(function () {
+    Route::get('/okeconnect', [\App\Http\Controllers\AdminOkeconnectController::class, 'index'])->name('admin.okeconnect.index');
+    Route::post('/okeconnect/sync', [\App\Http\Controllers\AdminOkeconnectController::class, 'sync'])->name('admin.okeconnect.sync');
+    Route::post('/okeconnect/markup', [\App\Http\Controllers\AdminOkeconnectController::class, 'bulkMarkup'])->name('admin.okeconnect.markup');
+    Route::post('/okeconnect/toggle/{id}', [\App\Http\Controllers\AdminOkeconnectController::class, 'toggleStatus'])->name('admin.okeconnect.toggle');
+    Route::delete('/okeconnect/destroy/{id}', [\App\Http\Controllers\AdminOkeconnectController::class, 'destroy'])->name('admin.okeconnect.destroy');
+});
+
+// 🛡️ MENU PUBLIC CEK STOK (Aman dari Hacker - Max 60 request/menit)
+Route::get('/cek-stok', [\App\Http\Controllers\PublicStokController::class, 'index'])
+    ->middleware('throttle:60,1')
+    ->name('public.stok');
+
+// 🛠️ API TOOLS PUSAT AKRAB V8
+Route::middleware(['auth'])->group(function () {
+    Route::post('/api/v8/check-promo', [\App\Http\Controllers\Order\AkrabV8Controller::class, 'checkPromo']);
+    Route::post('/api/v8/check-transaction', [\App\Http\Controllers\Order\AkrabV8Controller::class, 'checkTransaction']);
+});

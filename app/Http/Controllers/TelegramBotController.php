@@ -2,9 +2,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Services\TelegramService;
-use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Cache;
 
 class TelegramBotController extends Controller
@@ -12,100 +11,169 @@ class TelegramBotController extends Controller
     public function webhook(Request $request)
     {
         $update = $request->all();
-        $adminId = TelegramService::getSecret('TELEGRAM_CHAT_ID');
+        $token = env('TELEGRAM_BOT_TOKEN');
 
-        // 1. MENU KLIK (INLINE BUTTON)
+        if (!$token) {
+            return response()->json(['status' => 'error', 'message' => 'Token not set']);
+        }
+
+        // 🌟 1. TANGANI KLIK TOMBOL INLINE (CALLBACK QUERY)
         if (isset($update['callback_query'])) {
-            $chatId = $update['callback_query']['message']['chat']['id'];
-            $data = $update['callback_query']['data'];
-            
-            if ($chatId != $adminId) return response()->json(['status' => 'unauthorized']);
+            $callback = $update['callback_query'];
+            $chatId = $callback['message']['chat']['id'] ?? null;
+            $messageId = $callback['message']['message_id'] ?? null;
+            $data = $callback['data'] ?? '';
+            $queryId = $callback['id'] ?? null;
 
-            // 🚀 ANTI-TIMEOUT: Tutup koneksi ke Telegram detik ini juga agar bot tidak loading lama
-            if (function_exists('fastcgi_finish_request')) {
-                response()->json(['status' => 'success'])->send();
-                fastcgi_finish_request();
+            // Hentikan animasi loading di tombol Telegram
+            if ($queryId) {
+                Http::post("https://api.telegram.org/bot{$token}/answerCallbackQuery", [
+                    'callback_query_id' => $queryId
+                ]);
             }
 
-            // Eksekusi Background dimulai
-            try {
-                if ($data == 'menu_backup_full') {
-                    Artisan::call('milastore:backup_full');
-                }
-                else
-                if ($data == 'menu_backup') {
-                    Artisan::call('milastore:backup');
-                } 
-                elseif ($data == 'menu_maint_on') {
-                    Artisan::call('down', ['--secret' => 'milastore-admin-bypass']);
-                    TelegramService::sendMessage("🚨 *PANIC MODE AKTIF!*\nWebsite MilaStore dilockdown total.\nBypass Link: `https://milastore.cloud/milastore-admin-bypass`");
-                } 
-                elseif ($data == 'menu_maint_off') {
-                    Artisan::call('up');
-                    TelegramService::sendMessage("✅ *PANIC MODE MATI!*\nWebsite MilaStore kembali online normal.");
-                }
-                elseif ($data == 'menu_server') {
-                    $load = sys_getloadavg();
-                    $disk = @disk_free_space("/") ? round(100 - (disk_free_space("/") / disk_total_space("/") * 100), 2) : 0;
-                    $msg = "📊 *STATUS INFRASTRUKTUR SERVER*\n\n🖥️ *CPU Load*: " . $load[0] . "\n💾 *Sisa Disk*: " . $disk . "%\n⚡ *Status Web*: " . (app()->isDownForMaintenance() ? '🔴 OFFLINE' : '🟢 ONLINE');
-                    TelegramService::sendMessage($msg);
-                }
-                elseif ($data == 'menu_keuangan') {
-                    $saldoTotal = DB::table('users')->sum('saldo') ?? 0;
-                    $trxPending = DB::table('transaksi')->where('status', 'Pending')->count() ?? 0;
-                    $trxSuksesHariIni = DB::table('transaksi')->where('status', 'Sukses')->whereDate('updated_at', today())->count() ?? 0;
-                    $omzetHariIni = DB::table('transaksi')->where('status', 'Sukses')->whereDate('updated_at', today())->sum('harga') ?? 0;
+            if ($chatId) {
+                if ($data === 'menu_main' || $data === 'menu_refresh') {
+                    $this->sendMenu($chatId, $token, $messageId, true);
+                
+                } elseif ($data === 'menu_firewall') {
+                    $this->sendFirewallStatus($chatId, $token, $messageId, true);
+                
+                } elseif (str_starts_with($data, 'unblock_ip_')) {
+                    // AKSI: UNBLOCK 1 IP (LEBIH CERDAS TANPA ID)
+                    $ip = str_replace('unblock_ip_', '', $data);
                     
-                    $msg = "💰 *DASHBOARD FINANSIAL MILASTORE*\n\n";
-                    $msg .= "💸 *Total Dana Member*: Rp " . number_format($saldoTotal, 0, ',', '.') . "\n";
-                    $msg .= "📈 *Omzet Hari Ini*: Rp " . number_format($omzetHariIni, 0, ',', '.') . "\n";
-                    $msg .= "✅ *Sukses Hari Ini*: " . $trxSuksesHariIni . " Trx\n";
-                    $msg .= "⏳ *Antrean Pending*: " . $trxPending . " Trx\n";
-                    TelegramService::sendMessage($msg);
+                    // Hapus dari semua lapisan cache & database
+                    Cache::forget('rate_limit_' . str_replace(':', '_', $ip));
+                    DB::table('banned_ips')->where('ip', $ip)->delete();
+                    
+                    $this->sendTextMessage($chatId, $token, "✅ *SUKSES!* IP `{$ip}` berhasil di-unblock dan dipulihkan!");
+                    $this->sendFirewallStatus($chatId, $token, $messageId, true);
+                
+                } elseif ($data === 'unblock_all') {
+                    // AKSI: UNBLOCK SEMUA IP
+                    $allBanned = DB::table('banned_ips')->get();
+                    foreach ($allBanned as $b) {
+                        Cache::forget('rate_limit_' . str_replace(':', '_', $b->ip));
+                    }
+                    DB::table('banned_ips')->truncate(); 
+                    $this->sendTextMessage($chatId, $token, "💥 *MASS UNBLOCK SUKSES!*\nSeluruh IP ({$allBanned->count()} IP) telah dibebaskan dari daftar hitam.");
+                    $this->sendFirewallStatus($chatId, $token, $messageId, true);
                 }
-                elseif ($data == 'menu_sniper_on') {
-                    Cache::put('khfy_sniper_mode', 'on');
-                    TelegramService::sendMessage("🔥 *RADAR SNIPER KHFY: ON!*\nMesin otomatis aktif memindai sisa_slot!");
-                }
-                elseif ($data == 'menu_sniper_off') {
-                    Cache::put('khfy_sniper_mode', 'off');
-                    TelegramService::sendMessage("💤 *RADAR SNIPER KHFY: OFF!*\nMesin ditidurkan. Tidak ada tembakan PO.");
-                }
-            } catch (\Exception $e) {
-                TelegramService::sendMessage("⚠️ *CRASH EXECUTION*:\n`" . $e->getMessage() . "`");
+            }
+            return response()->json(['status' => 'ok']);
+        }
+
+        // 🌟 2. TANGANI PESAN TEKS (COMMAND)
+        if (!isset($update['message'])) {
+            return response()->json(['status' => 'ok']);
+        }
+
+        $message = $update['message'];
+        $chatId = $message['chat']['id'] ?? null;
+        $text = trim($message['text'] ?? '');
+
+        if (!$chatId) return response()->json(['status' => 'ok']);
+
+        if ($text === '/start' || $text === '/menu') {
+            $this->sendMenu($chatId, $token);
+            return response()->json(['status' => 'ok']);
+        }
+
+        if (str_starts_with($text, '/firewall') || str_starts_with($text, '/security')) {
+            $this->sendFirewallStatus($chatId, $token);
+            return response()->json(['status' => 'ok']);
+        }
+
+        return response()->json(['status' => 'ok']);
+    }
+
+    private function sendMenu($chatId, $token, $messageId = null, $isEdit = false)
+    {
+        $text = "🤖 *MILASTORE COMMAND CENTER* 🤖\n\n";
+        $text .= "Selamat datang Sultan! Sistem Navigasi aktif.\nSilakan pilih menu kontrol di bawah ini:\n";
+
+        $keyboard = [
+            'inline_keyboard' => [
+                [
+                    ['text' => '🛡️ Status Firewall & Banned IPs', 'callback_data' => 'menu_firewall']
+                ],
+                [
+                    ['text' => '🔄 Refresh Menu', 'callback_data' => 'menu_refresh']
+                ]
+            ]
+        ];
+
+        $this->sendOrEditMessage($chatId, $token, $text, $keyboard, $messageId, $isEdit);
+    }
+
+    private function sendFirewallStatus($chatId, $token, $messageId = null, $isEdit = false)
+    {
+        $bannedCount = DB::table('banned_ips')->count();
+        $latestBanned = DB::table('banned_ips')->orderBy('created_at', 'desc')->limit(5)->get();
+
+        $text = "🛡️ *PANGKALAN KONTROL KEAMANAN MILASTORE* 🛡️\n\n";
+        $text .= "🔴 Total IP Terblokir: *{$bannedCount} IP*\n\n";
+
+        $keyboard = ['inline_keyboard' => []];
+
+        if ($latestBanned->count() > 0) {
+            $text .= "📋 *5 IP Terakhir yang Diblokir:*\n";
+            foreach ($latestBanned as $b) {
+                // Tarik data forensik dari log keamanan agar menu lebih cerdas
+                $log = DB::table('security_logs')->where('ip', $b->ip)->orderBy('created_at', 'desc')->first();
+                $extraInfo = $log ? "\n  📍 _" . $log->pattern . "_" : "";
+                
+                $text .= "• `{$b->ip}`\n  Alasan: {$b->reason}{$extraInfo}\n\n";
+                
+                // Tombol Unblock Satuan
+                $keyboard['inline_keyboard'][] = [
+                    ['text' => "🔓 Unblock IP: {$b->ip}", 'callback_data' => "unblock_ip_{$b->ip}"]
+                ];
             }
             
-            // Fallback response jika fastcgi_finish_request tidak jalan
-            return response()->json(['status' => 'success']);
-        }
-
-        // 2. MENU TEXT (/admin atau /start)
-        if (isset($update['message'])) {
-            $chatId = $update['message']['chat']['id'];
-            $text = $update['message']['text'] ?? '';
-
-            if ($chatId == $adminId && ($text == '/start' || $text == '/admin')) {
-                $keyboard = [
-                    [
-                        ['text' => '💰 Keuangan', 'callback_data' => 'menu_keuangan'],
-                        ['text' => '🗄️ Backup DB', 'callback_data' => 'menu_backup'], ['text' => '📦 Backup Full Code', 'callback_data' => 'menu_backup_full']
-                    ],
-                    [
-                        ['text' => '🔥 Sniper ON', 'callback_data' => 'menu_sniper_on'],
-                        ['text' => '💤 Sniper OFF', 'callback_data' => 'menu_sniper_off']
-                    ],
-                    [
-                        ['text' => '📊 Status Server', 'callback_data' => 'menu_server'],
-                        ['text' => '🚨 PANIC MODE', 'callback_data' => 'menu_maint_on']
-                    ],
-                    [
-                        ['text' => '✅ MATIKAN PANIC MODE', 'callback_data' => 'menu_maint_off']
-                    ]
+            // Tombol Sapu Jagat
+            if ($bannedCount > 0) {
+                $keyboard['inline_keyboard'][] = [
+                    ['text' => "💥 UNBLOCK SEMUA IP ({$bannedCount}) 💥", 'callback_data' => "unblock_all"]
                 ];
-                $msg = "🦅 *MILASTORE COMMAND CENTER V12 (FINAL)* 🦅\n\nSelamat datang, Sultan. Semua sistem telah bersih dan online. Silakan berikan instruksi:";
-                TelegramService::sendMessage($msg, $keyboard, true);
             }
+        } else {
+            $text .= "✅ _Tidak ada IP aktif yang diblokir. Sistem aman dari penyusup!_\n\n";
         }
-        return response()->json(['status' => 'ok']);
+
+        // Tombol Navigasi Bawah
+        $keyboard['inline_keyboard'][] = [
+            ['text' => '🔄 Refresh', 'callback_data' => 'menu_firewall'],
+            ['text' => '« Menu Utama', 'callback_data' => 'menu_main']
+        ];
+
+        $this->sendOrEditMessage($chatId, $token, $text, $keyboard, $messageId, $isEdit);
+    }
+
+    private function sendTextMessage($chatId, $token, $text)
+    {
+        Http::post("https://api.telegram.org/bot{$token}/sendMessage", [
+            'chat_id' => $chatId,
+            'text' => $text,
+            'parse_mode' => 'Markdown'
+        ]);
+    }
+
+    private function sendOrEditMessage($chatId, $token, $text, $keyboard, $messageId = null, $isEdit = false)
+    {
+        $endpoint = ($isEdit && $messageId) ? "editMessageText" : "sendMessage";
+        $params = [
+            'chat_id' => $chatId,
+            'text' => $text,
+            'parse_mode' => 'Markdown',
+            'reply_markup' => json_encode($keyboard)
+        ];
+        
+        if ($isEdit && $messageId) {
+            $params['message_id'] = $messageId;
+        }
+
+        Http::post("https://api.telegram.org/bot{$token}/{$endpoint}", $params);
     }
 }

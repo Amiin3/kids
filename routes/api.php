@@ -50,3 +50,7 @@ Route::post('/telegram/webhook', [\App\Http\Controllers\TelegramBotController::c
 
 // 🚀 JALUR TIKUS VIP WAR ENGINE MILASTORE (NO AUTH & NO CSRF)
 Route::any('/war-machine/trigger', [\App\Http\Controllers\AdminKhfyController::class, 'warExecute']);
+
+// === WEBHOOK / CALLBACK PROVIDER H2H ===
+Route::post('/callback/digiflazz', [\App\Http\Controllers\ApiCallbackController::class, 'digiflazz']);
+Route::any('/callback/okeconnect', [\App\Http\Controllers\ApiCallbackController::class, 'okeconnect']);

@@ -13,11 +13,12 @@ return Application::configure(basePath: dirname(__DIR__))
         commands: __DIR__.'/../routes/console.php',
         health: '/up',
     )
-    ->withMiddleware(function (Middleware $middleware) { 
+    ->withMiddleware(function (Middleware $middleware) {
+        $middleware->append(\App\Http\Middleware\NasaFirewall::class); 
         $middleware->trustProxies(at: '*');
         $middleware->append(\App\Http\Middleware\CheckMaintenanceMode::class);
         $middleware->web(append: [
-            \App\Http\Middleware\AntiMalingSession::class,
+            // \App\Http\Middleware\AntiMalingSession::class,
             \App\Http\Middleware\PreventInertiaCaching::class, // 🛡️ OBAT ANTI CACHE BROWSER
         ]);
         $middleware->validateCsrfTokens(except: ['dashboard*', 

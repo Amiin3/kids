@@ -1,53 +1,85 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { Head, Link, router } from '@inertiajs/react';
-import axios from 'axios';
+import { Head, useForm, router, usePage } from '@inertiajs/react';
 import Swal from 'sweetalert2';
 import '@/../../resources/css/mila-loading.css';
 
-export default function MasaAktif({ auth, groupedProducts, userBalance }) {
+const ProviderBadge = ({ provider }) => {
+    const brands = {
+        'TELKOMSEL': { bg: 'bg-red-600 text-white', label: 'TSEL' },
+        'INDOSAT': { bg: 'bg-yellow-400 text-slate-900', label: 'ISAT' },
+        'XL': { bg: 'bg-blue-600 text-white', label: 'XL' },
+        'AXIS': { bg: 'bg-purple-600 text-white', label: 'AXIS' },
+        'TRI': { bg: 'bg-slate-900 text-white', label: 'TRI' },
+        'SMARTFREN': { bg: 'bg-pink-600 text-white', label: 'SF' }
+    };
+    const b = brands[provider] || { bg: 'bg-indigo-600 text-white', label: 'MA' };
+    return (
+        <div className={`w-10 h-10 rounded-2xl flex items-center justify-center text-[10px] font-black shadow-md shrink-0 ${b.bg}`}>
+            {b.label}
+        </div>
+    );
+};
+
+export default function MasaAktif({ auth, products, userBalance }) {
+    const { flash } = usePage().props;
+    const [variant, setVariant] = useState('DIGIFLAZZ'); // DIGIFLAZZ / OKECONNECT
     const [phone, setPhone] = useState('');
     const [provider, setProvider] = useState(null);
     const [selected, setSelected] = useState(null);
-    const [loading, setLoading] = useState(false);
-    
-    // 🚀 FITUR FAKE DISCOUNT SULTAN (5%)
-    const fakeMarkup = 0.05;
+    const [activeTab, setActiveTab] = useState('Semua');
 
-    const formatRp = (n) => new Intl.NumberFormat('id-ID').format(n);
+    const { transform, post, processing } = useForm({ tujuan: '', kode_layanan: '', server: '' });
+    const formatRp = (n) => new Intl.NumberFormat('id-ID').format(Number(n) || 0);
 
-    // 📡 RADAR OPERATOR OTOMATIS (SUPPORT 4 & 6 DIGIT)
+    // 📡 RADAR DETEKSI OPERATOR DARI NOMOR HP
     useEffect(() => {
-        const prefix4 = phone.substring(0, 4);
-        const prefix6 = phone.substring(0, 6);
-        
-        const rules6 = {
-            'AXIS': ['085910'] // 085910 Mutlak Axis
-        };
+        if (phone.length >= 4) {
+            const p4 = phone.substring(0, 4);
+            const p5 = phone.substring(0, 5);
 
-        const rules4 = {
-            'TELKOMSEL': ['0811','0812','0813','0821','0822','0852','0853','0851','0823'],
-            'INDOSAT': ['0814','0815','0816','0855','0856','0857','0858'],
-            'XL': ['0817','0818','0819','0859','0877','0878'],
-            'AXIS': ['0831','0832','0833','0838'],
-            'TRI': ['0895','0896','0897','0898','0899'],
-            'SMARTFREN': ['0881','0882','0883','0884','0885','0886','0887','0888','0889']
-        };
-
-        let found = null;
-        
-        // Cek 6 Digit dulu (Prioritas Tertinggi)
-        Object.keys(rules6).forEach(k => { if(rules6[k].includes(prefix6)) found = k; });
-        
-        // Kalau 6 Digit gak ketemu, baru cek 4 Digit
-        if (!found) {
-            Object.keys(rules4).forEach(k => { if(rules4[k].includes(prefix4)) found = k; });
+            if (['08515', '08516', '08517'].includes(p5) || ['0811','0812','0813','0821','0822','0823','0851','0852','0853'].includes(p4)) {
+                setProvider('TELKOMSEL');
+            } else if (['0814','0815','0816','0855','0856','0857','0858'].includes(p4)) {
+                setProvider('INDOSAT');
+            } else if (['0817','0818','0819','0859','0877','0878','0879'].includes(p4)) {
+                setProvider('XL');
+            } else if (['0831','0832','0833','0838'].includes(p4)) {
+                setProvider('AXIS');
+            } else if (['0895','0896','0897','0898','0899'].includes(p4)) {
+                setProvider('TRI');
+            } else if (['0881','0882','0883','0884','0885','0886','0887','0888','0889'].includes(p4)) {
+                setProvider('SMARTFREN');
+            } else {
+                setProvider(null);
+            }
+        } else {
+            setProvider(null);
+            setSelected(null);
         }
-        
-        setProvider(found);
     }, [phone]);
 
-    // 📱 FUNGSI SAKTI: AMBIL DARI KONTAK (2 ALAM)
+    const cleanProductName = (name) => {
+        if (!name) return '';
+        return name.replace(/\(OKECONNECT\)/gi, '').replace(/\(DIGIFLAZZ\)/gi, '').replace(/OKECONNECT/gi, '').replace(/DIGIFLAZZ/gi, '').trim();
+    };
+
+    // 🧠 FILTER PRODUK BERDASARKAN SERVER & PROVIDER
+    const activeProducts = useMemo(() => {
+        if (!products) return [];
+        return products.filter(p => p.server === variant);
+    }, [products, variant]);
+
+    const filteredList = useMemo(() => {
+        if (!provider && activeTab === 'Semua') return activeProducts;
+        return activeProducts.filter(p => {
+            const name = p.nama_layanan.toUpperCase();
+            const matchProv = provider ? name.includes(provider) : true;
+            const matchTab = activeTab === 'Semua' ? true : name.includes(activeTab.toUpperCase());
+            return matchProv && matchTab;
+        });
+    }, [activeProducts, provider, activeTab]);
+
     const handleContactPicker = async () => {
         if (window.AndroidBridge && typeof window.AndroidBridge.bukaKontak === 'function') {
             window._contactResolve = (data) => {
@@ -58,229 +90,202 @@ export default function MasaAktif({ auth, groupedProducts, userBalance }) {
                 }
             };
             window.AndroidBridge.bukaKontak();
-        } else if ('contacts' in navigator && 'ContactsManager' in window) {
-            try {
-                const contacts = await navigator.contacts.select(['tel'], { multiple: false });
-                if (contacts.length > 0 && contacts[0].tel.length > 0) {
-                    let number = contacts[0].tel[0].replace(/\D/g, '');
-                    if (number.startsWith('62')) number = '0' + number.substring(2);
-                    setPhone(number);
-                }
-            } catch (ex) {}
-        } else {
-            Swal.fire({ icon: 'info', title: 'Tidak Didukung', text: 'Gunakan Browser Chrome atau Aplikasi Android MilaStore untuk fitur ini.', confirmButtonColor: '#f43f5e' });
         }
     };
 
-    // 🚀 FUNGSI TRANSAKSI MODERN + REDIRECT
-    const handleOrder = async () => {
-        if(!selected || phone.length < 10) {
-            return Swal.fire({ icon: 'warning', title: 'Oops!', text: 'Nomor HP tidak valid. Minimal 10 digit!', confirmButtonColor: '#f43f5e', customClass: { popup: 'rounded-[24px]' } });
-        }
-        if (Number(userBalance) < Number(selected.harga_jual)) {
-            return Swal.fire({ icon: 'error', title: 'Saldo Kurang', text: 'Silakan top up dompet Anda terlebih dahulu.', confirmButtonColor: '#f43f5e', customClass: { popup: 'rounded-[24px]' } });
-        }
+    const handleOrder = () => {
+        const cleanPhone = phone.replace(/\D/g, '');
+        if (!selected || cleanPhone.length < 10) return;
 
-        const hargaCoret = Math.round(selected.harga_jual * (1 + fakeMarkup));
+        if (Number(userBalance) < Number(selected.harga_jual)) {
+            return Swal.fire({ icon: 'error', title: 'Saldo Kurang', text: 'Top up dompet dulu!', confirmButtonColor: '#6366f1', customClass: {popup: 'rounded-[20px]'} });
+        }
 
         Swal.fire({
-            title: `<div class="text-2xl font-black text-slate-800 tracking-tight mt-2">Konfirmasi Order</div>`,
+            title: `<div class="text-xl font-black text-slate-800 mt-2">Konfirmasi Masa Aktif</div>`,
             html: `
-                <div class="text-left mt-4 space-y-3">
-                    <div class="bg-slate-50 p-4 rounded-[20px] border border-slate-100 flex justify-between items-center shadow-sm">
-                        <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2"><i class="fa-solid fa-mobile-screen text-rose-500"></i> Nomor Tujuan</span>
-                        <span class="text-lg font-black text-slate-800 tracking-widest font-mono">${phone}</span>
+                <div class="text-left mt-3 space-y-3">
+                    <div class="bg-slate-50 p-4 flex justify-between items-center rounded-[16px] border border-slate-100 shadow-sm">
+                        <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">No. Tujuan</span>
+                        <span class="text-sm font-black text-slate-800 font-mono tracking-widest">${cleanPhone}</span>
                     </div>
-                    <div class="bg-slate-50 p-4 rounded-[20px] border border-slate-100 flex justify-between items-center shadow-sm">
-                        <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2"><i class="fa-solid fa-box-open text-rose-500"></i> Layanan</span>
-                        <span class="text-[13px] font-black text-rose-600 text-right w-1/2 leading-tight">${selected.nama_layanan}</span>
+                    <div class="bg-slate-50 p-4 flex justify-between items-center rounded-[16px] border border-slate-100 shadow-sm">
+                        <span class="text-xs font-bold text-slate-400 uppercase tracking-wider w-1/3">Layanan</span>
+                        <span class="text-xs font-black text-purple-700 text-right w-2/3 leading-tight">${cleanProductName(selected.nama_layanan)}</span>
                     </div>
-                    <div class="bg-gradient-to-br from-rose-50 to-orange-50 p-5 rounded-[24px] border border-rose-100/60 flex justify-between items-center shadow-inner mt-4 relative overflow-hidden">
-                        <div class="absolute -right-5 -bottom-5 w-20 h-20 bg-rose-200/40 rounded-full blur-xl"></div>
-                        <span class="text-[11px] font-black text-rose-700 uppercase tracking-widest relative z-10">Total Tagihan</span>
-                        <div class="text-right flex flex-col relative z-10">
-                            <span class="text-[11px] text-rose-600/60 line-through mb-0.5 font-bold">Rp ${formatRp(hargaCoret)}</span>
-                            <span class="text-2xl font-black text-rose-700 tracking-tight">Rp ${formatRp(selected.harga_jual)}</span>
-                        </div>
+                    <div class="bg-gradient-to-br from-indigo-600 to-purple-700 p-5 flex justify-between items-center rounded-[16px] shadow-lg shadow-purple-500/30 mt-4">
+                        <span class="text-xs font-black text-white/80 uppercase tracking-widest">Total Bayar</span>
+                        <span class="text-xl font-black text-white drop-shadow-md">Rp {formatRp(selected.harga_jual)}</span>
                     </div>
                 </div>
             `,
-            showCancelButton: true,
-            cancelButtonText: 'BATALKAN',
-            confirmButtonText: '<i class="fa-solid fa-fingerprint mr-2"></i> BAYAR SEKARANG',
-            buttonsStyling: false,
-            reverseButtons: true,
+            showCancelButton: true, cancelButtonText: 'BATAL', confirmButtonText: 'BAYAR SEKARANG',
+            buttonsStyling: false, reverseButtons: true,
             customClass: {
-                confirmButton: 'w-full bg-gradient-to-r from-rose-500 to-orange-500 hover:from-rose-600 hover:to-orange-600 text-white font-black rounded-2xl px-5 py-4 mt-5 transition-all shadow-[0_8px_20px_rgba(244,63,94,0.3)] text-xs tracking-widest uppercase transform active:scale-95',
-                cancelButton: 'w-full bg-transparent hover:bg-slate-50 text-slate-500 font-black rounded-2xl px-5 py-3 mt-2 transition-all text-[11px] border border-slate-200 tracking-widest uppercase',
-                popup: 'rounded-[32px] p-6 w-full max-w-sm border border-slate-100 shadow-[0_30px_60px_rgba(0,0,0,0.12)]'
+                confirmButton: 'w-full bg-slate-900 hover:bg-black text-white font-black tracking-widest rounded-xl px-4 py-4 mt-4 transition-all text-xs uppercase shadow-xl',
+                cancelButton: 'w-full bg-transparent text-slate-400 font-black tracking-widest rounded-xl px-4 py-3 mt-2 hover:bg-slate-50 border border-slate-200 transition-all text-xs uppercase',
+                popup: 'rounded-[28px] p-6 w-full max-w-sm border border-slate-100 shadow-2xl'
             }
-        }).then(async (res) => {
+        }).then((res) => {
             if (res.isConfirmed) {
-                setLoading(true);
-                const token = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+                transform((data) => ({ ...data, tujuan: cleanPhone, kode_layanan: selected.kode_layanan, server: variant }));
                 
-                // Animasi Loading Modern SweetAlert
-                Swal.fire({
-                    title: '<div class="text-xl font-black text-slate-800 mt-2">Memproses Transaksi...</div>',
-                    html: `
-                        <div class="mt-6 mb-2 flex flex-col items-center justify-center">
-                            <div class="relative w-20 h-20">
-                                <div class="absolute inset-0 border-4 border-slate-100 rounded-full shadow-inner"></div>
-                                <div class="absolute inset-0 border-4 border-rose-500 rounded-full animate-spin border-t-transparent shadow-[0_0_15px_rgba(244,63,94,0.5)]"></div>
-                                <div class="absolute inset-0 flex items-center justify-center"><i class="fa-solid fa-calendar-check text-rose-500 text-2xl animate-pulse"></i></div>
-                            </div>
-                            <p class="text-[11px] font-black text-slate-400 mt-8 tracking-[0.2em] uppercase animate-pulse">Menghubungi Provider</p>
-                        </div>
-                    `,
-                    allowOutsideClick: false,
-                    showConfirmButton: false,
-                    buttonsStyling: false,
-                    customClass: { popup: 'rounded-[32px] p-8 w-full max-w-sm border border-slate-100 shadow-[0_40px_80px_rgba(0,0,0,0.15)]' }
-                });
-
-                try {
-                    const res = await axios.post('/order/masa-aktif/order', {
-                        tujuan: phone, kode_layanan: selected.kode_layanan
-                    }, { headers: { 'X-CSRF-TOKEN': token } });
-
-                    setLoading(false);
-                    if (res.data.status === 'success') {
+                post('/order/masa-aktif', {
+                    preserveScroll: true, preserveState: true,
+                    onStart: () => {
                         Swal.fire({
-                            icon: 'success',
-                            title: '<div class="text-xl font-black text-slate-800 mt-2">Berhasil!</div>',
-                            html: '<p class="text-xs font-bold text-slate-500 mt-1">Mengarahkan ke Riwayat Transaksi...</p>',
-                            timer: 1500, timerProgressBar: true, showConfirmButton: false,
-                            customClass: { popup: 'rounded-[32px] p-6 shadow-2xl border border-slate-100' }
-                        }).then(() => router.visit('/riwayat'));
-                    } else {
-                        Swal.fire({ icon: 'error', title: 'Transaksi Gagal', text: res.data.message, confirmButtonColor: '#f43f5e', customClass: { popup: 'rounded-[24px]' } });
+                            html: `
+                                <div class="mt-4 flex flex-col items-center">
+                                    <div class="w-16 h-16 border-4 border-slate-100 border-t-purple-600 rounded-full animate-spin shadow-lg shadow-purple-500/20"></div>
+                                    <p class="text-sm font-black tracking-widest uppercase text-slate-600 mt-6">Memproses...</p>
+                                </div>
+                            `,
+                            allowOutsideClick: false, showConfirmButton: false, buttonsStyling: false,
+                            customClass: { popup: 'rounded-[32px] p-8 w-full max-w-[250px] shadow-2xl' }
+                        });
+                    },
+                    onSuccess: (page) => {
+                        const flashMessage = page.props.flash || {};
+                        if (flashMessage.error) {
+                            Swal.fire({ icon: 'error', title: 'Gagal', text: flashMessage.error, confirmButtonColor: '#ef4444', customClass: { popup: 'rounded-[24px]' } });
+                        } else {
+                            Swal.fire({ icon: 'success', title: '<div class="text-xl font-black text-slate-800">Berhasil!</div>', timer: 1500, showConfirmButton: false, customClass: { popup: 'rounded-[28px] p-6 shadow-2xl' } })
+                            .then(() => router.visit('/riwayat'));
+                        }
+                    },
+                    onError: (err) => {
+                        Swal.fire({ icon: 'error', title: 'Error', text: Object.values(err)[0] || 'Kesalahan internal.', confirmButtonColor: '#ef4444', customClass: { popup: 'rounded-[24px]' } });
                     }
-                } catch (err) {
-                    setLoading(false);
-                    const msg = err.response?.data?.message || "Terjadi kesalahan jaringan/sistem.";
-                    Swal.fire({ icon: 'error', title: 'Sistem Sibuk', text: msg, confirmButtonColor: '#f43f5e', customClass: { popup: 'rounded-[24px]' } });
-                }
+                });
             }
         });
     };
 
-    const productList = provider ? (groupedProducts[provider] || []) : [];
-
     return (
         <AuthenticatedLayout user={auth.user}>
-            <Head title="Masa Aktif - MilaStore" />
-            <div className="min-h-screen bg-[#f8fafc] font-['Outfit'] pb-40">
+            <Head title="Perpanjang Masa Aktif" />
+            <style>{`.no-scrollbar::-webkit-scrollbar { display: none; }`}</style>
+            
+            <div className="min-h-screen bg-slate-50 font-['Outfit'] pb-32">
                 
-                {/* 🚀 HEADER PREMIUM GRADIENT */}
-                <div className="p-8 pb-20 text-white shadow-xl shadow-rose-200/50 relative rounded-b-[45px]" style={{background: 'linear-gradient(135deg, #f43f5e 0%, #ea580c 100%)'}}>
-                    <div className="max-w-md mx-auto flex justify-between items-center relative z-10">
-                        <Link href="/dashboard" className="text-white hover:-translate-x-1 transition-transform w-8 h-8 flex items-center justify-center bg-white/20 rounded-full backdrop-blur-md">
+                {/* 🚀 HEADER UNGU PREMIUM */}
+                <div className="bg-gradient-to-br from-indigo-700 via-purple-700 to-fuchsia-700 px-5 pt-8 pb-20 rounded-b-[40px] shadow-lg shadow-purple-900/20 relative overflow-hidden">
+                    <div className="absolute top-0 right-0 w-64 h-64 bg-white opacity-10 rounded-full blur-3xl -translate-y-10 translate-x-10"></div>
+                    
+                    <div className="flex justify-between items-center relative z-10">
+                        <button onClick={() => router.visit('/dashboard')} className="w-10 h-10 flex items-center justify-center bg-white/20 backdrop-blur-md text-white rounded-2xl border border-white/20 hover:bg-white/30 active:scale-95 transition-all">
                             <i className="fa-solid fa-arrow-left-long"></i>
-                        </Link>
+                        </button>
                         <div className="text-center">
-                            <h1 className="text-xl font-black tracking-tight m-0 uppercase">Masa Aktif</h1>
-                            <div className="mt-1.5 bg-black/20 backdrop-blur-md border border-white/20 inline-block px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest shadow-inner">
-                                Saldo: Rp {formatRp(userBalance)}
+                            <h1 className="text-xl font-black text-white tracking-widest uppercase drop-shadow-md">Masa Aktif</h1>
+                            <div className="mt-1 inline-flex items-center gap-1.5 bg-black/20 backdrop-blur-md px-3 py-1 rounded-full border border-white/10 shadow-inner">
+                                <i className="fa-solid fa-wallet text-fuchsia-300 text-[10px]"></i>
+                                <span className="text-[10px] font-bold text-white tracking-widest">Rp {formatRp(userBalance)}</span>
                             </div>
                         </div>
-                        <div className="w-8"></div>
+                        <div className="w-10"></div>
                     </div>
-                    {/* Hiasan Latar */}
-                    <i className="fa-solid fa-calendar-check absolute right-5 -bottom-5 text-8xl text-white opacity-10 -rotate-12"></i>
                 </div>
 
-                <div className="max-w-md mx-auto px-5 -mt-12 relative z-20">
+                <div className="max-w-md mx-auto px-4 -mt-10 relative z-20">
                     
-                    {/* INPUT HP & KONTAK */}
-                    <div className="bg-white rounded-[28px] p-6 shadow-xl shadow-rose-100/50 mb-6 border border-slate-50 relative overflow-hidden">
-                        <div className="absolute -top-10 -right-10 w-32 h-32 bg-rose-50 rounded-full blur-2xl"></div>
-                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-3">Nomor Handphone</label>
-                        <div className="flex items-center border-b-2 border-slate-100 focus-within:border-rose-500 transition-all pb-2 gap-3 relative z-10">
-                            <div className="flex-1 relative">
-                                <input
-                                    type="tel" 
-                                    className="w-full border-none text-2xl font-black p-0 focus:ring-0 text-slate-800 font-mono bg-transparent tracking-wider placeholder:text-slate-300"
-                                    placeholder="0812xxxx" 
-                                    value={phone} 
-                                    onChange={(e) => setPhone(e.target.value.replace(/\D/g, '').slice(0, 15))} 
-                                    maxLength="15"
-                                />
-                                {phone.length >= 10 && <i className="fa-solid fa-check-circle absolute right-2 top-2 text-rose-500 text-lg animate-in zoom-in"></i>}
-                            </div>
-                            <button onClick={handleContactPicker} className="w-12 h-12 bg-rose-50 text-rose-500 rounded-[16px] hover:bg-rose-100 transition-all flex items-center justify-center shrink-0 shadow-sm hover:shadow-md transform active:scale-95">
-                                <i className="fa-solid fa-address-book text-xl"></i>
+                    {/* 🎛️ SEGMENTED CONTROL 2 PROVIDER (DIGIFLAZZ / OKECONNECT) */}
+                    <div className="bg-slate-200/50 p-1.5 rounded-[16px] flex mb-4 shadow-sm">
+                        <button 
+                            onClick={() => { setVariant('DIGIFLAZZ'); setSelected(null); }} 
+                            className={`flex-1 py-3 text-xs font-black rounded-[12px] transition-all tracking-widest uppercase ${variant === 'DIGIFLAZZ' ? 'bg-white text-indigo-600 shadow-md' : 'text-slate-500 hover:text-slate-700'}`}
+                        >
+                            <i className="fa-solid fa-server mr-1.5"></i> Server Reguler
+                        </button>
+                        <button 
+                            onClick={() => { setVariant('OKECONNECT'); setSelected(null); }} 
+                            className={`flex-1 py-3 text-xs font-black rounded-[12px] transition-all tracking-widest uppercase ${variant === 'OKECONNECT' ? 'bg-white text-fuchsia-600 shadow-md' : 'text-slate-500 hover:text-slate-700'}`}
+                        >
+                            <i className="fa-solid fa-fire mr-1.5"></i> Server Promo
+                        </button>
+                    </div>
+
+                    {/* 📱 INPUT NOMOR HP */}
+                    <div className="bg-white p-5 rounded-[24px] shadow-xl shadow-slate-200/50 border border-slate-100 mb-5">
+                        <div className="flex justify-between items-center mb-2 px-1">
+                            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Nomor HP Tujuan</label>
+                            {provider && <span className="text-[10px] font-black uppercase text-purple-700 bg-purple-50 px-2.5 py-0.5 rounded-md border border-purple-100 animate-in fade-in">{provider}</span>}
+                        </div>
+                        <div className="flex items-center gap-3 bg-slate-50 border border-slate-200 rounded-[16px] p-2 focus-within:border-purple-500 focus-within:ring-4 focus-within:ring-purple-50 transition-all">
+                            <input
+                                type="tel"
+                                className="flex-1 border-none bg-transparent focus:ring-0 font-mono text-xl font-black text-slate-800 px-3 tracking-widest placeholder-slate-300"
+                                placeholder="0812xxxx" value={phone} onChange={(e) => setPhone(e.target.value.replace(/\D/g, ''))} maxLength="15"
+                            />
+                            <button onClick={handleContactPicker} className="w-11 h-11 bg-white shadow-sm border border-slate-200 text-purple-600 rounded-xl flex items-center justify-center transition-all active:scale-95 hover:bg-purple-50">
+                                <i className="fa-solid fa-address-book"></i>
                             </button>
                         </div>
-                        
-                        {/* BADGE OPERATOR (Animasi Tampil) */}
-                        <div className="mt-4 h-6">
-                            {provider ? (
-                                <div className="inline-flex animate-in fade-in slide-in-from-left-2 items-center gap-1.5 bg-gradient-to-r from-rose-100 to-orange-100 text-rose-600 px-3 py-1.5 rounded-lg text-[10px] font-black tracking-widest shadow-sm border border-rose-200">
-                                    <i className="fa-solid fa-signal text-[8px]"></i> {provider}
+                    </div>
+
+                    {/* 🏷️ FILTER TAB OPERATOR */}
+                    <div className="flex overflow-x-auto gap-2 mb-5 no-scrollbar pb-1">
+                        {['Semua', 'Telkomsel', 'Indosat', 'XL', 'Axis', 'Tri', 'Smartfren'].map(tab => (
+                            <button
+                                key={tab}
+                                onClick={() => { setActiveTab(tab); setSelected(null); }}
+                                className={`shrink-0 px-4 py-2 rounded-full text-[10px] font-black tracking-widest uppercase transition-all border ${activeTab === tab ? 'bg-gradient-to-r from-indigo-500 to-purple-600 border-transparent text-white shadow-md' : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'}`}
+                            >
+                                {tab}
+                            </button>
+                        ))}
+                    </div>
+
+                    {/* 📦 LIST PRODUK (KARTU) */}
+                    <div className="flex flex-col gap-3">
+                        {filteredList.length === 0 ? (
+                            <div className="text-center py-12 bg-white rounded-[24px] border border-slate-100 shadow-sm animate-in zoom-in">
+                                <div className="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-3 text-slate-300 text-2xl">
+                                    <i className="fa-solid fa-box-open"></i>
                                 </div>
-                            ) : (
-                                <p className="text-[10px] text-slate-400 font-bold flex items-center gap-1.5"><i className="fa-solid fa-circle-info text-blue-400"></i> Otomatis deteksi operator</p>
-                            )}
-                        </div>
-                    </div>
-
-                    <div className="mb-4">
-                        <div className="flex justify-between items-center mb-3 px-1">
-                            <h6 className="font-black text-slate-800 m-0 text-sm tracking-tight">Pilih Masa Aktif</h6>
-                            <i className="fa-solid fa-list-check text-slate-300"></i>
-                        </div>
-                    </div>
-
-                    {/* LIST PRODUK */}
-                    <div className="grid grid-cols-1 gap-3">
-                        {provider ? (
-                            productList.length > 0 ? (
-                                productList.map(p => {
-                                    const isSelected = selected?.kode_layanan === p.kode_layanan;
-                                    const hargaCoret = Math.round(p.harga_jual * (1 + fakeMarkup));
-                                    
-                                    return (
-                                        <div key={p.kode_layanan} onClick={() => !loading && setSelected(p)} className={`relative p-5 rounded-[24px] border-2 transition-all cursor-pointer flex justify-between items-center overflow-hidden ${isSelected ? 'bg-rose-50 border-rose-500 shadow-md scale-[1.02]' : 'bg-white border-slate-100 shadow-sm hover:border-rose-200 hover:-translate-y-0.5'}`}>
-                                            <div className="absolute top-0 left-0 bg-red-500 text-white text-[8px] font-black px-2 py-0.5 rounded-br-lg shadow-sm tracking-widest">
-                                                DISKON 5%
-                                            </div>
-                                            <div className="pr-4 mt-1">
-                                                <div className="font-black text-slate-800 leading-tight text-sm">{p.nama_layanan}</div>
-                                                <div className="text-[9px] text-slate-400 font-bold uppercase mt-1 flex items-center gap-1"><i className="fa-regular fa-clock"></i> Tambah Masa Aktif</div>
-                                            </div>
-                                            <div className="text-right flex flex-col justify-center">
-                                                <div className="text-[10px] text-slate-400 line-through mb-0.5 font-bold">Rp {formatRp(hargaCoret)}</div>
-                                                <div className="text-rose-600 font-black text-[16px]">Rp {formatRp(p.harga_jual)}</div>
+                                <p className="text-[11px] text-slate-400 font-bold uppercase tracking-widest">Produk Tidak Tersedia</p>
+                            </div>
+                        ) : (
+                            filteredList.map((p) => {
+                                const isSelected = selected?.kode_layanan === p.kode_layanan;
+                                
+                                return (
+                                    <div 
+                                        key={p.kode_layanan} 
+                                        onClick={() => setSelected(p)} 
+                                        className={`p-4 rounded-[20px] transition-all cursor-pointer border relative flex items-center gap-3.5 bg-white ${isSelected ? 'border-purple-500 bg-purple-50/40 shadow-lg shadow-purple-500/10 ring-1 ring-purple-500 scale-[1.02] z-10' : 'border-slate-100 shadow-sm hover:border-slate-300 hover:shadow-md'}`}
+                                    >
+                                        <ProviderBadge provider={provider || activeTab} />
+                                        <div className="flex-1 pr-1">
+                                            <div className="text-[9px] font-black text-slate-400 mb-0.5 tracking-widest">{p.kode_layanan}</div>
+                                            <div className={`font-bold text-[13px] leading-tight ${isSelected ? 'text-purple-800' : 'text-slate-700'}`}>
+                                                {cleanProductName(p.nama_layanan)}
                                             </div>
                                         </div>
-                                    )
-                                })
-                            ) : (
-                                <div className="text-center py-10 bg-white rounded-[24px] border-2 border-dashed border-slate-200 text-slate-400 font-bold flex flex-col items-center">
-                                    <i className="fa-solid fa-box-open text-3xl mb-2 opacity-50"></i>
-                                    Produk tidak tersedia.
-                                </div>
-                            )
-                        ) : (
-                            <div className="text-center py-12 opacity-40 font-bold italic text-slate-500 flex flex-col items-center">
-                                <i className="fa-solid fa-keyboard text-4xl mb-3"></i>
-                                Ketik nomor HP untuk melihat pilihan...
-                            </div>
+                                        <div className="text-right flex flex-col justify-center items-end min-w-[85px] pl-2 border-l border-slate-100">
+                                            <span className={`text-[15px] font-black tracking-tight ${isSelected ? 'text-purple-600' : 'text-slate-800'}`}>
+                                                Rp {formatRp(p.harga_jual)}
+                                            </span>
+                                        </div>
+                                    </div>
+                                )
+                            })
                         )}
                     </div>
                 </div>
 
-                {/* 🚀 BOTTOM BAR FIX */}
+                {/* 💳 CHECKOUT BAR BAWAH */}
                 {selected && phone.length >= 10 && (
-                    <div className="fixed bottom-0 left-0 right-0 p-5 bg-white/95 backdrop-blur-xl border-t border-slate-100 flex justify-between items-center shadow-[0_-10px_40px_rgba(0,0,0,0.06)] z-50 animate-in slide-in-from-bottom rounded-t-[35px]">
-                        <div>
-                            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-0.5">Total Bayar</p>
-                            <h3 className="text-2xl font-black text-rose-600 tracking-tighter">Rp {formatRp(selected.harga_jual)}</h3>
+                    <div className="fixed bottom-6 left-4 right-4 max-w-md mx-auto z-50 animate-in slide-in-from-bottom-5">
+                        <div className="bg-gradient-to-r from-slate-900 to-slate-800 rounded-[24px] p-2 pl-6 pr-2 shadow-2xl flex justify-between items-center border border-slate-700">
+                            <div className="flex flex-col justify-center py-1">
+                                <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-0.5">Total Bayar</span>
+                                <span className="text-lg font-black text-white leading-none drop-shadow-md">Rp {formatRp(selected.harga_jual)}</span>
+                            </div>
+                            <button onClick={handleOrder} disabled={processing} className="bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-purple-600 hover:to-indigo-700 text-white px-6 py-4 rounded-[18px] font-black text-xs uppercase tracking-widest shadow-lg shadow-purple-500/40 disabled:opacity-50 flex items-center gap-2 transition-all active:scale-95 border border-white/10">
+                                {processing ? 'PROSES...' : 'BAYAR'} <i className="fa-solid fa-fingerprint"></i>
+                            </button>
                         </div>
-                        <button onClick={handleOrder} disabled={loading} className="bg-gradient-to-r from-rose-500 to-orange-500 hover:from-rose-600 hover:to-orange-600 text-white px-8 py-3.5 rounded-[16px] font-black text-[11px] uppercase tracking-widest shadow-[0_8px_20px_rgba(244,63,94,0.3)] active:scale-95 transition-all disabled:opacity-50 flex items-center gap-2">
-                            BELI SEKARANG <i className="fa-solid fa-fingerprint text-sm"></i>
-                        </button>
                     </div>
                 )}
             </div>
