@@ -152640,3 +152640,629 @@
 #5 /www/wwwroot/milastore.cloud/artisan(16): Illuminate\\Foundation\\Application->handleCommand()
 #6 {main}
 "} 
+[2026-08-02 13:59:02] production.ERROR: There are no commands defined in the "bank" namespace. {"exception":"[object] (Symfony\\Component\\Console\\Exception\\NamespaceNotFoundException(code: 0): There are no commands defined in the \"bank\" namespace. at /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php:694)
+[stacktrace]
+#0 /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php(743): Symfony\\Component\\Console\\Application->findNamespace()
+#1 /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php(298): Symfony\\Component\\Console\\Application->find()
+#2 /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php(195): Symfony\\Component\\Console\\Application->doRun()
+#3 /www/wwwroot/milastore.cloud/vendor/laravel/framework/src/Illuminate/Foundation/Console/Kernel.php(198): Symfony\\Component\\Console\\Application->run()
+#4 /www/wwwroot/milastore.cloud/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(1235): Illuminate\\Foundation\\Console\\Kernel->handle()
+#5 /www/wwwroot/milastore.cloud/artisan(16): Illuminate\\Foundation\\Application->handleCommand()
+#6 {main}
+"} 
+[2026-08-02 13:59:02] production.ERROR: There are no commands defined in the "bank" namespace. {"exception":"[object] (Symfony\\Component\\Console\\Exception\\NamespaceNotFoundException(code: 0): There are no commands defined in the \"bank\" namespace. at /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php:694)
+[stacktrace]
+#0 /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php(743): Symfony\\Component\\Console\\Application->findNamespace()
+#1 /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php(298): Symfony\\Component\\Console\\Application->find()
+#2 /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php(195): Symfony\\Component\\Console\\Application->doRun()
+#3 /www/wwwroot/milastore.cloud/vendor/laravel/framework/src/Illuminate/Foundation/Console/Kernel.php(198): Symfony\\Component\\Console\\Application->run()
+#4 /www/wwwroot/milastore.cloud/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(1235): Illuminate\\Foundation\\Console\\Kernel->handle()
+#5 /www/wwwroot/milastore.cloud/artisan(16): Illuminate\\Foundation\\Application->handleCommand()
+#6 {main}
+"} 
+[2026-08-02 13:59:02] production.ERROR: Call to undefined function App\Console\Commands\imap_open() {"exception":"[object] (Error(code: 0): Call to undefined function App\\Console\\Commands\\imap_open() at /www/wwwroot/milastore.cloud/app/Console/Commands/BankParser.php:29)
+[stacktrace]
+#0 /www/wwwroot/milastore.cloud/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(36): App\\Console\\Commands\\BankParser->handle()
+#1 /www/wwwroot/milastore.cloud/vendor/laravel/framework/src/Illuminate/Container/Util.php(43): Illuminate\\Container\\BoundMethod::Illuminate\\Container\\{closure}()
+#2 /www/wwwroot/milastore.cloud/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(96): Illuminate\\Container\\Util::unwrapIfClosure()
+#3 /www/wwwroot/milastore.cloud/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(35): Illuminate\\Container\\BoundMethod::callBoundMethod()
+#4 /www/wwwroot/milastore.cloud/vendor/laravel/framework/src/Illuminate/Container/Container.php(799): Illuminate\\Container\\BoundMethod::call()
+#5 /www/wwwroot/milastore.cloud/vendor/laravel/framework/src/Illuminate/Console/Command.php(211): Illuminate\\Container\\Container->call()
+#6 /www/wwwroot/milastore.cloud/vendor/symfony/console/Command/Command.php(341): Illuminate\\Console\\Command->execute()
+#7 /www/wwwroot/milastore.cloud/vendor/laravel/framework/src/Illuminate/Console/Command.php(180): Symfony\\Component\\Console\\Command\\Command->run()
+#8 /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php(1102): Illuminate\\Console\\Command->run()
+#9 /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php(356): Symfony\\Component\\Console\\Application->doRunCommand()
+#10 /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php(195): Symfony\\Component\\Console\\Application->doRun()
+#11 /www/wwwroot/milastore.cloud/vendor/laravel/framework/src/Illuminate/Foundation/Console/Kernel.php(198): Symfony\\Component\\Console\\Application->run()
+#12 /www/wwwroot/milastore.cloud/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(1235): Illuminate\\Foundation\\Console\\Kernel->handle()
+#13 /www/wwwroot/milastore.cloud/artisan(16): Illuminate\\Foundation\\Application->handleCommand()
+#14 {main}
+"} 
+[2026-08-02 13:59:16] production.ERROR: There are no commands defined in the "bank" namespace. {"exception":"[object] (Symfony\\Component\\Console\\Exception\\NamespaceNotFoundException(code: 0): There are no commands defined in the \"bank\" namespace. at /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php:694)
+[stacktrace]
+#0 /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php(743): Symfony\\Component\\Console\\Application->findNamespace()
+#1 /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php(298): Symfony\\Component\\Console\\Application->find()
+#2 /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php(195): Symfony\\Component\\Console\\Application->doRun()
+#3 /www/wwwroot/milastore.cloud/vendor/laravel/framework/src/Illuminate/Foundation/Console/Kernel.php(198): Symfony\\Component\\Console\\Application->run()
+#4 /www/wwwroot/milastore.cloud/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(1235): Illuminate\\Foundation\\Console\\Kernel->handle()
+#5 /www/wwwroot/milastore.cloud/artisan(16): Illuminate\\Foundation\\Application->handleCommand()
+#6 {main}
+"} 
+[2026-08-02 13:59:16] production.ERROR: There are no commands defined in the "bank" namespace. {"exception":"[object] (Symfony\\Component\\Console\\Exception\\NamespaceNotFoundException(code: 0): There are no commands defined in the \"bank\" namespace. at /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php:694)
+[stacktrace]
+#0 /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php(743): Symfony\\Component\\Console\\Application->findNamespace()
+#1 /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php(298): Symfony\\Component\\Console\\Application->find()
+#2 /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php(195): Symfony\\Component\\Console\\Application->doRun()
+#3 /www/wwwroot/milastore.cloud/vendor/laravel/framework/src/Illuminate/Foundation/Console/Kernel.php(198): Symfony\\Component\\Console\\Application->run()
+#4 /www/wwwroot/milastore.cloud/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(1235): Illuminate\\Foundation\\Console\\Kernel->handle()
+#5 /www/wwwroot/milastore.cloud/artisan(16): Illuminate\\Foundation\\Application->handleCommand()
+#6 {main}
+"} 
+[2026-08-02 13:59:31] production.ERROR: There are no commands defined in the "bank" namespace. {"exception":"[object] (Symfony\\Component\\Console\\Exception\\NamespaceNotFoundException(code: 0): There are no commands defined in the \"bank\" namespace. at /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php:694)
+[stacktrace]
+#0 /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php(743): Symfony\\Component\\Console\\Application->findNamespace()
+#1 /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php(298): Symfony\\Component\\Console\\Application->find()
+#2 /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php(195): Symfony\\Component\\Console\\Application->doRun()
+#3 /www/wwwroot/milastore.cloud/vendor/laravel/framework/src/Illuminate/Foundation/Console/Kernel.php(198): Symfony\\Component\\Console\\Application->run()
+#4 /www/wwwroot/milastore.cloud/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(1235): Illuminate\\Foundation\\Console\\Kernel->handle()
+#5 /www/wwwroot/milastore.cloud/artisan(16): Illuminate\\Foundation\\Application->handleCommand()
+#6 {main}
+"} 
+[2026-08-02 13:59:31] production.ERROR: There are no commands defined in the "bank" namespace. {"exception":"[object] (Symfony\\Component\\Console\\Exception\\NamespaceNotFoundException(code: 0): There are no commands defined in the \"bank\" namespace. at /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php:694)
+[stacktrace]
+#0 /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php(743): Symfony\\Component\\Console\\Application->findNamespace()
+#1 /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php(298): Symfony\\Component\\Console\\Application->find()
+#2 /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php(195): Symfony\\Component\\Console\\Application->doRun()
+#3 /www/wwwroot/milastore.cloud/vendor/laravel/framework/src/Illuminate/Foundation/Console/Kernel.php(198): Symfony\\Component\\Console\\Application->run()
+#4 /www/wwwroot/milastore.cloud/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(1235): Illuminate\\Foundation\\Console\\Kernel->handle()
+#5 /www/wwwroot/milastore.cloud/artisan(16): Illuminate\\Foundation\\Application->handleCommand()
+#6 {main}
+"} 
+[2026-08-02 13:59:46] production.ERROR: There are no commands defined in the "bank" namespace. {"exception":"[object] (Symfony\\Component\\Console\\Exception\\NamespaceNotFoundException(code: 0): There are no commands defined in the \"bank\" namespace. at /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php:694)
+[stacktrace]
+#0 /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php(743): Symfony\\Component\\Console\\Application->findNamespace()
+#1 /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php(298): Symfony\\Component\\Console\\Application->find()
+#2 /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php(195): Symfony\\Component\\Console\\Application->doRun()
+#3 /www/wwwroot/milastore.cloud/vendor/laravel/framework/src/Illuminate/Foundation/Console/Kernel.php(198): Symfony\\Component\\Console\\Application->run()
+#4 /www/wwwroot/milastore.cloud/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(1235): Illuminate\\Foundation\\Console\\Kernel->handle()
+#5 /www/wwwroot/milastore.cloud/artisan(16): Illuminate\\Foundation\\Application->handleCommand()
+#6 {main}
+"} 
+[2026-08-02 13:59:46] production.ERROR: There are no commands defined in the "bank" namespace. {"exception":"[object] (Symfony\\Component\\Console\\Exception\\NamespaceNotFoundException(code: 0): There are no commands defined in the \"bank\" namespace. at /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php:694)
+[stacktrace]
+#0 /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php(743): Symfony\\Component\\Console\\Application->findNamespace()
+#1 /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php(298): Symfony\\Component\\Console\\Application->find()
+#2 /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php(195): Symfony\\Component\\Console\\Application->doRun()
+#3 /www/wwwroot/milastore.cloud/vendor/laravel/framework/src/Illuminate/Foundation/Console/Kernel.php(198): Symfony\\Component\\Console\\Application->run()
+#4 /www/wwwroot/milastore.cloud/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(1235): Illuminate\\Foundation\\Console\\Kernel->handle()
+#5 /www/wwwroot/milastore.cloud/artisan(16): Illuminate\\Foundation\\Application->handleCommand()
+#6 {main}
+"} 
+[2026-08-02 14:00:02] production.ERROR: Call to undefined function App\Console\Commands\imap_open() {"exception":"[object] (Error(code: 0): Call to undefined function App\\Console\\Commands\\imap_open() at /www/wwwroot/milastore.cloud/app/Console/Commands/BankParser.php:29)
+[stacktrace]
+#0 /www/wwwroot/milastore.cloud/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(36): App\\Console\\Commands\\BankParser->handle()
+#1 /www/wwwroot/milastore.cloud/vendor/laravel/framework/src/Illuminate/Container/Util.php(43): Illuminate\\Container\\BoundMethod::Illuminate\\Container\\{closure}()
+#2 /www/wwwroot/milastore.cloud/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(96): Illuminate\\Container\\Util::unwrapIfClosure()
+#3 /www/wwwroot/milastore.cloud/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(35): Illuminate\\Container\\BoundMethod::callBoundMethod()
+#4 /www/wwwroot/milastore.cloud/vendor/laravel/framework/src/Illuminate/Container/Container.php(799): Illuminate\\Container\\BoundMethod::call()
+#5 /www/wwwroot/milastore.cloud/vendor/laravel/framework/src/Illuminate/Console/Command.php(211): Illuminate\\Container\\Container->call()
+#6 /www/wwwroot/milastore.cloud/vendor/symfony/console/Command/Command.php(341): Illuminate\\Console\\Command->execute()
+#7 /www/wwwroot/milastore.cloud/vendor/laravel/framework/src/Illuminate/Console/Command.php(180): Symfony\\Component\\Console\\Command\\Command->run()
+#8 /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php(1102): Illuminate\\Console\\Command->run()
+#9 /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php(356): Symfony\\Component\\Console\\Application->doRunCommand()
+#10 /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php(195): Symfony\\Component\\Console\\Application->doRun()
+#11 /www/wwwroot/milastore.cloud/vendor/laravel/framework/src/Illuminate/Foundation/Console/Kernel.php(198): Symfony\\Component\\Console\\Application->run()
+#12 /www/wwwroot/milastore.cloud/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(1235): Illuminate\\Foundation\\Console\\Kernel->handle()
+#13 /www/wwwroot/milastore.cloud/artisan(16): Illuminate\\Foundation\\Application->handleCommand()
+#14 {main}
+"} 
+[2026-08-02 14:00:02] production.ERROR: There are no commands defined in the "bank" namespace. {"exception":"[object] (Symfony\\Component\\Console\\Exception\\NamespaceNotFoundException(code: 0): There are no commands defined in the \"bank\" namespace. at /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php:694)
+[stacktrace]
+#0 /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php(743): Symfony\\Component\\Console\\Application->findNamespace()
+#1 /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php(298): Symfony\\Component\\Console\\Application->find()
+#2 /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php(195): Symfony\\Component\\Console\\Application->doRun()
+#3 /www/wwwroot/milastore.cloud/vendor/laravel/framework/src/Illuminate/Foundation/Console/Kernel.php(198): Symfony\\Component\\Console\\Application->run()
+#4 /www/wwwroot/milastore.cloud/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(1235): Illuminate\\Foundation\\Console\\Kernel->handle()
+#5 /www/wwwroot/milastore.cloud/artisan(16): Illuminate\\Foundation\\Application->handleCommand()
+#6 {main}
+"} 
+[2026-08-02 14:00:02] production.ERROR: There are no commands defined in the "bank" namespace. {"exception":"[object] (Symfony\\Component\\Console\\Exception\\NamespaceNotFoundException(code: 0): There are no commands defined in the \"bank\" namespace. at /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php:694)
+[stacktrace]
+#0 /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php(743): Symfony\\Component\\Console\\Application->findNamespace()
+#1 /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php(298): Symfony\\Component\\Console\\Application->find()
+#2 /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php(195): Symfony\\Component\\Console\\Application->doRun()
+#3 /www/wwwroot/milastore.cloud/vendor/laravel/framework/src/Illuminate/Foundation/Console/Kernel.php(198): Symfony\\Component\\Console\\Application->run()
+#4 /www/wwwroot/milastore.cloud/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(1235): Illuminate\\Foundation\\Console\\Kernel->handle()
+#5 /www/wwwroot/milastore.cloud/artisan(16): Illuminate\\Foundation\\Application->handleCommand()
+#6 {main}
+"} 
+[2026-08-02 14:00:17] production.ERROR: There are no commands defined in the "bank" namespace. {"exception":"[object] (Symfony\\Component\\Console\\Exception\\NamespaceNotFoundException(code: 0): There are no commands defined in the \"bank\" namespace. at /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php:694)
+[stacktrace]
+#0 /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php(743): Symfony\\Component\\Console\\Application->findNamespace()
+#1 /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php(298): Symfony\\Component\\Console\\Application->find()
+#2 /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php(195): Symfony\\Component\\Console\\Application->doRun()
+#3 /www/wwwroot/milastore.cloud/vendor/laravel/framework/src/Illuminate/Foundation/Console/Kernel.php(198): Symfony\\Component\\Console\\Application->run()
+#4 /www/wwwroot/milastore.cloud/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(1235): Illuminate\\Foundation\\Console\\Kernel->handle()
+#5 /www/wwwroot/milastore.cloud/artisan(16): Illuminate\\Foundation\\Application->handleCommand()
+#6 {main}
+"} 
+[2026-08-02 14:00:17] production.ERROR: There are no commands defined in the "bank" namespace. {"exception":"[object] (Symfony\\Component\\Console\\Exception\\NamespaceNotFoundException(code: 0): There are no commands defined in the \"bank\" namespace. at /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php:694)
+[stacktrace]
+#0 /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php(743): Symfony\\Component\\Console\\Application->findNamespace()
+#1 /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php(298): Symfony\\Component\\Console\\Application->find()
+#2 /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php(195): Symfony\\Component\\Console\\Application->doRun()
+#3 /www/wwwroot/milastore.cloud/vendor/laravel/framework/src/Illuminate/Foundation/Console/Kernel.php(198): Symfony\\Component\\Console\\Application->run()
+#4 /www/wwwroot/milastore.cloud/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(1235): Illuminate\\Foundation\\Console\\Kernel->handle()
+#5 /www/wwwroot/milastore.cloud/artisan(16): Illuminate\\Foundation\\Application->handleCommand()
+#6 {main}
+"} 
+[2026-08-02 14:00:32] production.ERROR: There are no commands defined in the "bank" namespace. {"exception":"[object] (Symfony\\Component\\Console\\Exception\\NamespaceNotFoundException(code: 0): There are no commands defined in the \"bank\" namespace. at /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php:694)
+[stacktrace]
+#0 /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php(743): Symfony\\Component\\Console\\Application->findNamespace()
+#1 /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php(298): Symfony\\Component\\Console\\Application->find()
+#2 /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php(195): Symfony\\Component\\Console\\Application->doRun()
+#3 /www/wwwroot/milastore.cloud/vendor/laravel/framework/src/Illuminate/Foundation/Console/Kernel.php(198): Symfony\\Component\\Console\\Application->run()
+#4 /www/wwwroot/milastore.cloud/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(1235): Illuminate\\Foundation\\Console\\Kernel->handle()
+#5 /www/wwwroot/milastore.cloud/artisan(16): Illuminate\\Foundation\\Application->handleCommand()
+#6 {main}
+"} 
+[2026-08-02 14:00:32] production.ERROR: There are no commands defined in the "bank" namespace. {"exception":"[object] (Symfony\\Component\\Console\\Exception\\NamespaceNotFoundException(code: 0): There are no commands defined in the \"bank\" namespace. at /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php:694)
+[stacktrace]
+#0 /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php(743): Symfony\\Component\\Console\\Application->findNamespace()
+#1 /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php(298): Symfony\\Component\\Console\\Application->find()
+#2 /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php(195): Symfony\\Component\\Console\\Application->doRun()
+#3 /www/wwwroot/milastore.cloud/vendor/laravel/framework/src/Illuminate/Foundation/Console/Kernel.php(198): Symfony\\Component\\Console\\Application->run()
+#4 /www/wwwroot/milastore.cloud/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(1235): Illuminate\\Foundation\\Console\\Kernel->handle()
+#5 /www/wwwroot/milastore.cloud/artisan(16): Illuminate\\Foundation\\Application->handleCommand()
+#6 {main}
+"} 
+[2026-08-02 14:00:47] production.ERROR: There are no commands defined in the "bank" namespace. {"exception":"[object] (Symfony\\Component\\Console\\Exception\\NamespaceNotFoundException(code: 0): There are no commands defined in the \"bank\" namespace. at /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php:694)
+[stacktrace]
+#0 /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php(743): Symfony\\Component\\Console\\Application->findNamespace()
+#1 /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php(298): Symfony\\Component\\Console\\Application->find()
+#2 /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php(195): Symfony\\Component\\Console\\Application->doRun()
+#3 /www/wwwroot/milastore.cloud/vendor/laravel/framework/src/Illuminate/Foundation/Console/Kernel.php(198): Symfony\\Component\\Console\\Application->run()
+#4 /www/wwwroot/milastore.cloud/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(1235): Illuminate\\Foundation\\Console\\Kernel->handle()
+#5 /www/wwwroot/milastore.cloud/artisan(16): Illuminate\\Foundation\\Application->handleCommand()
+#6 {main}
+"} 
+[2026-08-02 14:00:47] production.ERROR: There are no commands defined in the "bank" namespace. {"exception":"[object] (Symfony\\Component\\Console\\Exception\\NamespaceNotFoundException(code: 0): There are no commands defined in the \"bank\" namespace. at /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php:694)
+[stacktrace]
+#0 /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php(743): Symfony\\Component\\Console\\Application->findNamespace()
+#1 /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php(298): Symfony\\Component\\Console\\Application->find()
+#2 /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php(195): Symfony\\Component\\Console\\Application->doRun()
+#3 /www/wwwroot/milastore.cloud/vendor/laravel/framework/src/Illuminate/Foundation/Console/Kernel.php(198): Symfony\\Component\\Console\\Application->run()
+#4 /www/wwwroot/milastore.cloud/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(1235): Illuminate\\Foundation\\Console\\Kernel->handle()
+#5 /www/wwwroot/milastore.cloud/artisan(16): Illuminate\\Foundation\\Application->handleCommand()
+#6 {main}
+"} 
+[2026-08-02 14:01:01] production.ERROR: Call to undefined function App\Console\Commands\imap_open() {"exception":"[object] (Error(code: 0): Call to undefined function App\\Console\\Commands\\imap_open() at /www/wwwroot/milastore.cloud/app/Console/Commands/BankParser.php:29)
+[stacktrace]
+#0 /www/wwwroot/milastore.cloud/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(36): App\\Console\\Commands\\BankParser->handle()
+#1 /www/wwwroot/milastore.cloud/vendor/laravel/framework/src/Illuminate/Container/Util.php(43): Illuminate\\Container\\BoundMethod::Illuminate\\Container\\{closure}()
+#2 /www/wwwroot/milastore.cloud/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(96): Illuminate\\Container\\Util::unwrapIfClosure()
+#3 /www/wwwroot/milastore.cloud/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(35): Illuminate\\Container\\BoundMethod::callBoundMethod()
+#4 /www/wwwroot/milastore.cloud/vendor/laravel/framework/src/Illuminate/Container/Container.php(799): Illuminate\\Container\\BoundMethod::call()
+#5 /www/wwwroot/milastore.cloud/vendor/laravel/framework/src/Illuminate/Console/Command.php(211): Illuminate\\Container\\Container->call()
+#6 /www/wwwroot/milastore.cloud/vendor/symfony/console/Command/Command.php(341): Illuminate\\Console\\Command->execute()
+#7 /www/wwwroot/milastore.cloud/vendor/laravel/framework/src/Illuminate/Console/Command.php(180): Symfony\\Component\\Console\\Command\\Command->run()
+#8 /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php(1102): Illuminate\\Console\\Command->run()
+#9 /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php(356): Symfony\\Component\\Console\\Application->doRunCommand()
+#10 /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php(195): Symfony\\Component\\Console\\Application->doRun()
+#11 /www/wwwroot/milastore.cloud/vendor/laravel/framework/src/Illuminate/Foundation/Console/Kernel.php(198): Symfony\\Component\\Console\\Application->run()
+#12 /www/wwwroot/milastore.cloud/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(1235): Illuminate\\Foundation\\Console\\Kernel->handle()
+#13 /www/wwwroot/milastore.cloud/artisan(16): Illuminate\\Foundation\\Application->handleCommand()
+#14 {main}
+"} 
+[2026-08-02 14:01:01] production.ERROR: There are no commands defined in the "bank" namespace. {"exception":"[object] (Symfony\\Component\\Console\\Exception\\NamespaceNotFoundException(code: 0): There are no commands defined in the \"bank\" namespace. at /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php:694)
+[stacktrace]
+#0 /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php(743): Symfony\\Component\\Console\\Application->findNamespace()
+#1 /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php(298): Symfony\\Component\\Console\\Application->find()
+#2 /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php(195): Symfony\\Component\\Console\\Application->doRun()
+#3 /www/wwwroot/milastore.cloud/vendor/laravel/framework/src/Illuminate/Foundation/Console/Kernel.php(198): Symfony\\Component\\Console\\Application->run()
+#4 /www/wwwroot/milastore.cloud/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(1235): Illuminate\\Foundation\\Console\\Kernel->handle()
+#5 /www/wwwroot/milastore.cloud/artisan(16): Illuminate\\Foundation\\Application->handleCommand()
+#6 {main}
+"} 
+[2026-08-02 14:01:01] production.ERROR: There are no commands defined in the "bank" namespace. {"exception":"[object] (Symfony\\Component\\Console\\Exception\\NamespaceNotFoundException(code: 0): There are no commands defined in the \"bank\" namespace. at /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php:694)
+[stacktrace]
+#0 /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php(743): Symfony\\Component\\Console\\Application->findNamespace()
+#1 /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php(298): Symfony\\Component\\Console\\Application->find()
+#2 /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php(195): Symfony\\Component\\Console\\Application->doRun()
+#3 /www/wwwroot/milastore.cloud/vendor/laravel/framework/src/Illuminate/Foundation/Console/Kernel.php(198): Symfony\\Component\\Console\\Application->run()
+#4 /www/wwwroot/milastore.cloud/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(1235): Illuminate\\Foundation\\Console\\Kernel->handle()
+#5 /www/wwwroot/milastore.cloud/artisan(16): Illuminate\\Foundation\\Application->handleCommand()
+#6 {main}
+"} 
+[2026-08-02 14:01:16] production.ERROR: There are no commands defined in the "bank" namespace. {"exception":"[object] (Symfony\\Component\\Console\\Exception\\NamespaceNotFoundException(code: 0): There are no commands defined in the \"bank\" namespace. at /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php:694)
+[stacktrace]
+#0 /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php(743): Symfony\\Component\\Console\\Application->findNamespace()
+#1 /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php(298): Symfony\\Component\\Console\\Application->find()
+#2 /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php(195): Symfony\\Component\\Console\\Application->doRun()
+#3 /www/wwwroot/milastore.cloud/vendor/laravel/framework/src/Illuminate/Foundation/Console/Kernel.php(198): Symfony\\Component\\Console\\Application->run()
+#4 /www/wwwroot/milastore.cloud/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(1235): Illuminate\\Foundation\\Console\\Kernel->handle()
+#5 /www/wwwroot/milastore.cloud/artisan(16): Illuminate\\Foundation\\Application->handleCommand()
+#6 {main}
+"} 
+[2026-08-02 14:01:16] production.ERROR: There are no commands defined in the "bank" namespace. {"exception":"[object] (Symfony\\Component\\Console\\Exception\\NamespaceNotFoundException(code: 0): There are no commands defined in the \"bank\" namespace. at /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php:694)
+[stacktrace]
+#0 /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php(743): Symfony\\Component\\Console\\Application->findNamespace()
+#1 /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php(298): Symfony\\Component\\Console\\Application->find()
+#2 /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php(195): Symfony\\Component\\Console\\Application->doRun()
+#3 /www/wwwroot/milastore.cloud/vendor/laravel/framework/src/Illuminate/Foundation/Console/Kernel.php(198): Symfony\\Component\\Console\\Application->run()
+#4 /www/wwwroot/milastore.cloud/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(1235): Illuminate\\Foundation\\Console\\Kernel->handle()
+#5 /www/wwwroot/milastore.cloud/artisan(16): Illuminate\\Foundation\\Application->handleCommand()
+#6 {main}
+"} 
+[2026-08-02 14:01:31] production.ERROR: There are no commands defined in the "bank" namespace. {"exception":"[object] (Symfony\\Component\\Console\\Exception\\NamespaceNotFoundException(code: 0): There are no commands defined in the \"bank\" namespace. at /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php:694)
+[stacktrace]
+#0 /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php(743): Symfony\\Component\\Console\\Application->findNamespace()
+#1 /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php(298): Symfony\\Component\\Console\\Application->find()
+#2 /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php(195): Symfony\\Component\\Console\\Application->doRun()
+#3 /www/wwwroot/milastore.cloud/vendor/laravel/framework/src/Illuminate/Foundation/Console/Kernel.php(198): Symfony\\Component\\Console\\Application->run()
+#4 /www/wwwroot/milastore.cloud/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(1235): Illuminate\\Foundation\\Console\\Kernel->handle()
+#5 /www/wwwroot/milastore.cloud/artisan(16): Illuminate\\Foundation\\Application->handleCommand()
+#6 {main}
+"} 
+[2026-08-02 14:01:31] production.ERROR: There are no commands defined in the "bank" namespace. {"exception":"[object] (Symfony\\Component\\Console\\Exception\\NamespaceNotFoundException(code: 0): There are no commands defined in the \"bank\" namespace. at /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php:694)
+[stacktrace]
+#0 /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php(743): Symfony\\Component\\Console\\Application->findNamespace()
+#1 /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php(298): Symfony\\Component\\Console\\Application->find()
+#2 /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php(195): Symfony\\Component\\Console\\Application->doRun()
+#3 /www/wwwroot/milastore.cloud/vendor/laravel/framework/src/Illuminate/Foundation/Console/Kernel.php(198): Symfony\\Component\\Console\\Application->run()
+#4 /www/wwwroot/milastore.cloud/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(1235): Illuminate\\Foundation\\Console\\Kernel->handle()
+#5 /www/wwwroot/milastore.cloud/artisan(16): Illuminate\\Foundation\\Application->handleCommand()
+#6 {main}
+"} 
+[2026-08-02 14:01:46] production.ERROR: There are no commands defined in the "bank" namespace. {"exception":"[object] (Symfony\\Component\\Console\\Exception\\NamespaceNotFoundException(code: 0): There are no commands defined in the \"bank\" namespace. at /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php:694)
+[stacktrace]
+#0 /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php(743): Symfony\\Component\\Console\\Application->findNamespace()
+#1 /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php(298): Symfony\\Component\\Console\\Application->find()
+#2 /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php(195): Symfony\\Component\\Console\\Application->doRun()
+#3 /www/wwwroot/milastore.cloud/vendor/laravel/framework/src/Illuminate/Foundation/Console/Kernel.php(198): Symfony\\Component\\Console\\Application->run()
+#4 /www/wwwroot/milastore.cloud/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(1235): Illuminate\\Foundation\\Console\\Kernel->handle()
+#5 /www/wwwroot/milastore.cloud/artisan(16): Illuminate\\Foundation\\Application->handleCommand()
+#6 {main}
+"} 
+[2026-08-02 14:01:46] production.ERROR: There are no commands defined in the "bank" namespace. {"exception":"[object] (Symfony\\Component\\Console\\Exception\\NamespaceNotFoundException(code: 0): There are no commands defined in the \"bank\" namespace. at /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php:694)
+[stacktrace]
+#0 /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php(743): Symfony\\Component\\Console\\Application->findNamespace()
+#1 /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php(298): Symfony\\Component\\Console\\Application->find()
+#2 /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php(195): Symfony\\Component\\Console\\Application->doRun()
+#3 /www/wwwroot/milastore.cloud/vendor/laravel/framework/src/Illuminate/Foundation/Console/Kernel.php(198): Symfony\\Component\\Console\\Application->run()
+#4 /www/wwwroot/milastore.cloud/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(1235): Illuminate\\Foundation\\Console\\Kernel->handle()
+#5 /www/wwwroot/milastore.cloud/artisan(16): Illuminate\\Foundation\\Application->handleCommand()
+#6 {main}
+"} 
+[2026-08-02 14:02:01] production.ERROR: There are no commands defined in the "bank" namespace. {"exception":"[object] (Symfony\\Component\\Console\\Exception\\NamespaceNotFoundException(code: 0): There are no commands defined in the \"bank\" namespace. at /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php:694)
+[stacktrace]
+#0 /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php(743): Symfony\\Component\\Console\\Application->findNamespace()
+#1 /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php(298): Symfony\\Component\\Console\\Application->find()
+#2 /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php(195): Symfony\\Component\\Console\\Application->doRun()
+#3 /www/wwwroot/milastore.cloud/vendor/laravel/framework/src/Illuminate/Foundation/Console/Kernel.php(198): Symfony\\Component\\Console\\Application->run()
+#4 /www/wwwroot/milastore.cloud/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(1235): Illuminate\\Foundation\\Console\\Kernel->handle()
+#5 /www/wwwroot/milastore.cloud/artisan(16): Illuminate\\Foundation\\Application->handleCommand()
+#6 {main}
+"} 
+[2026-08-02 14:02:01] production.ERROR: There are no commands defined in the "bank" namespace. {"exception":"[object] (Symfony\\Component\\Console\\Exception\\NamespaceNotFoundException(code: 0): There are no commands defined in the \"bank\" namespace. at /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php:694)
+[stacktrace]
+#0 /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php(743): Symfony\\Component\\Console\\Application->findNamespace()
+#1 /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php(298): Symfony\\Component\\Console\\Application->find()
+#2 /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php(195): Symfony\\Component\\Console\\Application->doRun()
+#3 /www/wwwroot/milastore.cloud/vendor/laravel/framework/src/Illuminate/Foundation/Console/Kernel.php(198): Symfony\\Component\\Console\\Application->run()
+#4 /www/wwwroot/milastore.cloud/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(1235): Illuminate\\Foundation\\Console\\Kernel->handle()
+#5 /www/wwwroot/milastore.cloud/artisan(16): Illuminate\\Foundation\\Application->handleCommand()
+#6 {main}
+"} 
+[2026-08-02 14:02:02] production.ERROR: Call to undefined function App\Console\Commands\imap_open() {"exception":"[object] (Error(code: 0): Call to undefined function App\\Console\\Commands\\imap_open() at /www/wwwroot/milastore.cloud/app/Console/Commands/BankParser.php:29)
+[stacktrace]
+#0 /www/wwwroot/milastore.cloud/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(36): App\\Console\\Commands\\BankParser->handle()
+#1 /www/wwwroot/milastore.cloud/vendor/laravel/framework/src/Illuminate/Container/Util.php(43): Illuminate\\Container\\BoundMethod::Illuminate\\Container\\{closure}()
+#2 /www/wwwroot/milastore.cloud/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(96): Illuminate\\Container\\Util::unwrapIfClosure()
+#3 /www/wwwroot/milastore.cloud/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(35): Illuminate\\Container\\BoundMethod::callBoundMethod()
+#4 /www/wwwroot/milastore.cloud/vendor/laravel/framework/src/Illuminate/Container/Container.php(799): Illuminate\\Container\\BoundMethod::call()
+#5 /www/wwwroot/milastore.cloud/vendor/laravel/framework/src/Illuminate/Console/Command.php(211): Illuminate\\Container\\Container->call()
+#6 /www/wwwroot/milastore.cloud/vendor/symfony/console/Command/Command.php(341): Illuminate\\Console\\Command->execute()
+#7 /www/wwwroot/milastore.cloud/vendor/laravel/framework/src/Illuminate/Console/Command.php(180): Symfony\\Component\\Console\\Command\\Command->run()
+#8 /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php(1102): Illuminate\\Console\\Command->run()
+#9 /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php(356): Symfony\\Component\\Console\\Application->doRunCommand()
+#10 /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php(195): Symfony\\Component\\Console\\Application->doRun()
+#11 /www/wwwroot/milastore.cloud/vendor/laravel/framework/src/Illuminate/Foundation/Console/Kernel.php(198): Symfony\\Component\\Console\\Application->run()
+#12 /www/wwwroot/milastore.cloud/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(1235): Illuminate\\Foundation\\Console\\Kernel->handle()
+#13 /www/wwwroot/milastore.cloud/artisan(16): Illuminate\\Foundation\\Application->handleCommand()
+#14 {main}
+"} 
+[2026-08-02 14:02:16] production.ERROR: There are no commands defined in the "bank" namespace. {"exception":"[object] (Symfony\\Component\\Console\\Exception\\NamespaceNotFoundException(code: 0): There are no commands defined in the \"bank\" namespace. at /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php:694)
+[stacktrace]
+#0 /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php(743): Symfony\\Component\\Console\\Application->findNamespace()
+#1 /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php(298): Symfony\\Component\\Console\\Application->find()
+#2 /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php(195): Symfony\\Component\\Console\\Application->doRun()
+#3 /www/wwwroot/milastore.cloud/vendor/laravel/framework/src/Illuminate/Foundation/Console/Kernel.php(198): Symfony\\Component\\Console\\Application->run()
+#4 /www/wwwroot/milastore.cloud/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(1235): Illuminate\\Foundation\\Console\\Kernel->handle()
+#5 /www/wwwroot/milastore.cloud/artisan(16): Illuminate\\Foundation\\Application->handleCommand()
+#6 {main}
+"} 
+[2026-08-02 14:02:16] production.ERROR: There are no commands defined in the "bank" namespace. {"exception":"[object] (Symfony\\Component\\Console\\Exception\\NamespaceNotFoundException(code: 0): There are no commands defined in the \"bank\" namespace. at /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php:694)
+[stacktrace]
+#0 /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php(743): Symfony\\Component\\Console\\Application->findNamespace()
+#1 /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php(298): Symfony\\Component\\Console\\Application->find()
+#2 /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php(195): Symfony\\Component\\Console\\Application->doRun()
+#3 /www/wwwroot/milastore.cloud/vendor/laravel/framework/src/Illuminate/Foundation/Console/Kernel.php(198): Symfony\\Component\\Console\\Application->run()
+#4 /www/wwwroot/milastore.cloud/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(1235): Illuminate\\Foundation\\Console\\Kernel->handle()
+#5 /www/wwwroot/milastore.cloud/artisan(16): Illuminate\\Foundation\\Application->handleCommand()
+#6 {main}
+"} 
+[2026-08-02 14:02:31] production.ERROR: There are no commands defined in the "bank" namespace. {"exception":"[object] (Symfony\\Component\\Console\\Exception\\NamespaceNotFoundException(code: 0): There are no commands defined in the \"bank\" namespace. at /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php:694)
+[stacktrace]
+#0 /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php(743): Symfony\\Component\\Console\\Application->findNamespace()
+#1 /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php(298): Symfony\\Component\\Console\\Application->find()
+#2 /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php(195): Symfony\\Component\\Console\\Application->doRun()
+#3 /www/wwwroot/milastore.cloud/vendor/laravel/framework/src/Illuminate/Foundation/Console/Kernel.php(198): Symfony\\Component\\Console\\Application->run()
+#4 /www/wwwroot/milastore.cloud/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(1235): Illuminate\\Foundation\\Console\\Kernel->handle()
+#5 /www/wwwroot/milastore.cloud/artisan(16): Illuminate\\Foundation\\Application->handleCommand()
+#6 {main}
+"} 
+[2026-08-02 14:02:31] production.ERROR: There are no commands defined in the "bank" namespace. {"exception":"[object] (Symfony\\Component\\Console\\Exception\\NamespaceNotFoundException(code: 0): There are no commands defined in the \"bank\" namespace. at /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php:694)
+[stacktrace]
+#0 /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php(743): Symfony\\Component\\Console\\Application->findNamespace()
+#1 /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php(298): Symfony\\Component\\Console\\Application->find()
+#2 /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php(195): Symfony\\Component\\Console\\Application->doRun()
+#3 /www/wwwroot/milastore.cloud/vendor/laravel/framework/src/Illuminate/Foundation/Console/Kernel.php(198): Symfony\\Component\\Console\\Application->run()
+#4 /www/wwwroot/milastore.cloud/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(1235): Illuminate\\Foundation\\Console\\Kernel->handle()
+#5 /www/wwwroot/milastore.cloud/artisan(16): Illuminate\\Foundation\\Application->handleCommand()
+#6 {main}
+"} 
+[2026-08-02 14:02:46] production.ERROR: There are no commands defined in the "bank" namespace. {"exception":"[object] (Symfony\\Component\\Console\\Exception\\NamespaceNotFoundException(code: 0): There are no commands defined in the \"bank\" namespace. at /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php:694)
+[stacktrace]
+#0 /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php(743): Symfony\\Component\\Console\\Application->findNamespace()
+#1 /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php(298): Symfony\\Component\\Console\\Application->find()
+#2 /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php(195): Symfony\\Component\\Console\\Application->doRun()
+#3 /www/wwwroot/milastore.cloud/vendor/laravel/framework/src/Illuminate/Foundation/Console/Kernel.php(198): Symfony\\Component\\Console\\Application->run()
+#4 /www/wwwroot/milastore.cloud/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(1235): Illuminate\\Foundation\\Console\\Kernel->handle()
+#5 /www/wwwroot/milastore.cloud/artisan(16): Illuminate\\Foundation\\Application->handleCommand()
+#6 {main}
+"} 
+[2026-08-02 14:02:46] production.ERROR: There are no commands defined in the "bank" namespace. {"exception":"[object] (Symfony\\Component\\Console\\Exception\\NamespaceNotFoundException(code: 0): There are no commands defined in the \"bank\" namespace. at /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php:694)
+[stacktrace]
+#0 /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php(743): Symfony\\Component\\Console\\Application->findNamespace()
+#1 /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php(298): Symfony\\Component\\Console\\Application->find()
+#2 /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php(195): Symfony\\Component\\Console\\Application->doRun()
+#3 /www/wwwroot/milastore.cloud/vendor/laravel/framework/src/Illuminate/Foundation/Console/Kernel.php(198): Symfony\\Component\\Console\\Application->run()
+#4 /www/wwwroot/milastore.cloud/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(1235): Illuminate\\Foundation\\Console\\Kernel->handle()
+#5 /www/wwwroot/milastore.cloud/artisan(16): Illuminate\\Foundation\\Application->handleCommand()
+#6 {main}
+"} 
+[2026-08-02 14:03:02] production.ERROR: There are no commands defined in the "bank" namespace. {"exception":"[object] (Symfony\\Component\\Console\\Exception\\NamespaceNotFoundException(code: 0): There are no commands defined in the \"bank\" namespace. at /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php:694)
+[stacktrace]
+#0 /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php(743): Symfony\\Component\\Console\\Application->findNamespace()
+#1 /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php(298): Symfony\\Component\\Console\\Application->find()
+#2 /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php(195): Symfony\\Component\\Console\\Application->doRun()
+#3 /www/wwwroot/milastore.cloud/vendor/laravel/framework/src/Illuminate/Foundation/Console/Kernel.php(198): Symfony\\Component\\Console\\Application->run()
+#4 /www/wwwroot/milastore.cloud/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(1235): Illuminate\\Foundation\\Console\\Kernel->handle()
+#5 /www/wwwroot/milastore.cloud/artisan(16): Illuminate\\Foundation\\Application->handleCommand()
+#6 {main}
+"} 
+[2026-08-02 14:03:02] production.ERROR: Call to undefined function App\Console\Commands\imap_open() {"exception":"[object] (Error(code: 0): Call to undefined function App\\Console\\Commands\\imap_open() at /www/wwwroot/milastore.cloud/app/Console/Commands/BankParser.php:29)
+[stacktrace]
+#0 /www/wwwroot/milastore.cloud/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(36): App\\Console\\Commands\\BankParser->handle()
+#1 /www/wwwroot/milastore.cloud/vendor/laravel/framework/src/Illuminate/Container/Util.php(43): Illuminate\\Container\\BoundMethod::Illuminate\\Container\\{closure}()
+#2 /www/wwwroot/milastore.cloud/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(96): Illuminate\\Container\\Util::unwrapIfClosure()
+#3 /www/wwwroot/milastore.cloud/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(35): Illuminate\\Container\\BoundMethod::callBoundMethod()
+#4 /www/wwwroot/milastore.cloud/vendor/laravel/framework/src/Illuminate/Container/Container.php(799): Illuminate\\Container\\BoundMethod::call()
+#5 /www/wwwroot/milastore.cloud/vendor/laravel/framework/src/Illuminate/Console/Command.php(211): Illuminate\\Container\\Container->call()
+#6 /www/wwwroot/milastore.cloud/vendor/symfony/console/Command/Command.php(341): Illuminate\\Console\\Command->execute()
+#7 /www/wwwroot/milastore.cloud/vendor/laravel/framework/src/Illuminate/Console/Command.php(180): Symfony\\Component\\Console\\Command\\Command->run()
+#8 /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php(1102): Illuminate\\Console\\Command->run()
+#9 /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php(356): Symfony\\Component\\Console\\Application->doRunCommand()
+#10 /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php(195): Symfony\\Component\\Console\\Application->doRun()
+#11 /www/wwwroot/milastore.cloud/vendor/laravel/framework/src/Illuminate/Foundation/Console/Kernel.php(198): Symfony\\Component\\Console\\Application->run()
+#12 /www/wwwroot/milastore.cloud/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(1235): Illuminate\\Foundation\\Console\\Kernel->handle()
+#13 /www/wwwroot/milastore.cloud/artisan(16): Illuminate\\Foundation\\Application->handleCommand()
+#14 {main}
+"} 
+[2026-08-02 14:03:02] production.ERROR: There are no commands defined in the "bank" namespace. {"exception":"[object] (Symfony\\Component\\Console\\Exception\\NamespaceNotFoundException(code: 0): There are no commands defined in the \"bank\" namespace. at /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php:694)
+[stacktrace]
+#0 /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php(743): Symfony\\Component\\Console\\Application->findNamespace()
+#1 /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php(298): Symfony\\Component\\Console\\Application->find()
+#2 /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php(195): Symfony\\Component\\Console\\Application->doRun()
+#3 /www/wwwroot/milastore.cloud/vendor/laravel/framework/src/Illuminate/Foundation/Console/Kernel.php(198): Symfony\\Component\\Console\\Application->run()
+#4 /www/wwwroot/milastore.cloud/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(1235): Illuminate\\Foundation\\Console\\Kernel->handle()
+#5 /www/wwwroot/milastore.cloud/artisan(16): Illuminate\\Foundation\\Application->handleCommand()
+#6 {main}
+"} 
+[2026-08-02 14:03:16] production.ERROR: There are no commands defined in the "bank" namespace. {"exception":"[object] (Symfony\\Component\\Console\\Exception\\NamespaceNotFoundException(code: 0): There are no commands defined in the \"bank\" namespace. at /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php:694)
+[stacktrace]
+#0 /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php(743): Symfony\\Component\\Console\\Application->findNamespace()
+#1 /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php(298): Symfony\\Component\\Console\\Application->find()
+#2 /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php(195): Symfony\\Component\\Console\\Application->doRun()
+#3 /www/wwwroot/milastore.cloud/vendor/laravel/framework/src/Illuminate/Foundation/Console/Kernel.php(198): Symfony\\Component\\Console\\Application->run()
+#4 /www/wwwroot/milastore.cloud/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(1235): Illuminate\\Foundation\\Console\\Kernel->handle()
+#5 /www/wwwroot/milastore.cloud/artisan(16): Illuminate\\Foundation\\Application->handleCommand()
+#6 {main}
+"} 
+[2026-08-02 14:03:16] production.ERROR: There are no commands defined in the "bank" namespace. {"exception":"[object] (Symfony\\Component\\Console\\Exception\\NamespaceNotFoundException(code: 0): There are no commands defined in the \"bank\" namespace. at /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php:694)
+[stacktrace]
+#0 /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php(743): Symfony\\Component\\Console\\Application->findNamespace()
+#1 /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php(298): Symfony\\Component\\Console\\Application->find()
+#2 /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php(195): Symfony\\Component\\Console\\Application->doRun()
+#3 /www/wwwroot/milastore.cloud/vendor/laravel/framework/src/Illuminate/Foundation/Console/Kernel.php(198): Symfony\\Component\\Console\\Application->run()
+#4 /www/wwwroot/milastore.cloud/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(1235): Illuminate\\Foundation\\Console\\Kernel->handle()
+#5 /www/wwwroot/milastore.cloud/artisan(16): Illuminate\\Foundation\\Application->handleCommand()
+#6 {main}
+"} 
+[2026-08-02 14:03:31] production.ERROR: There are no commands defined in the "bank" namespace. {"exception":"[object] (Symfony\\Component\\Console\\Exception\\NamespaceNotFoundException(code: 0): There are no commands defined in the \"bank\" namespace. at /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php:694)
+[stacktrace]
+#0 /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php(743): Symfony\\Component\\Console\\Application->findNamespace()
+#1 /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php(298): Symfony\\Component\\Console\\Application->find()
+#2 /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php(195): Symfony\\Component\\Console\\Application->doRun()
+#3 /www/wwwroot/milastore.cloud/vendor/laravel/framework/src/Illuminate/Foundation/Console/Kernel.php(198): Symfony\\Component\\Console\\Application->run()
+#4 /www/wwwroot/milastore.cloud/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(1235): Illuminate\\Foundation\\Console\\Kernel->handle()
+#5 /www/wwwroot/milastore.cloud/artisan(16): Illuminate\\Foundation\\Application->handleCommand()
+#6 {main}
+"} 
+[2026-08-02 14:03:31] production.ERROR: There are no commands defined in the "bank" namespace. {"exception":"[object] (Symfony\\Component\\Console\\Exception\\NamespaceNotFoundException(code: 0): There are no commands defined in the \"bank\" namespace. at /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php:694)
+[stacktrace]
+#0 /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php(743): Symfony\\Component\\Console\\Application->findNamespace()
+#1 /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php(298): Symfony\\Component\\Console\\Application->find()
+#2 /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php(195): Symfony\\Component\\Console\\Application->doRun()
+#3 /www/wwwroot/milastore.cloud/vendor/laravel/framework/src/Illuminate/Foundation/Console/Kernel.php(198): Symfony\\Component\\Console\\Application->run()
+#4 /www/wwwroot/milastore.cloud/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(1235): Illuminate\\Foundation\\Console\\Kernel->handle()
+#5 /www/wwwroot/milastore.cloud/artisan(16): Illuminate\\Foundation\\Application->handleCommand()
+#6 {main}
+"} 
+[2026-08-02 14:03:46] production.ERROR: There are no commands defined in the "bank" namespace. {"exception":"[object] (Symfony\\Component\\Console\\Exception\\NamespaceNotFoundException(code: 0): There are no commands defined in the \"bank\" namespace. at /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php:694)
+[stacktrace]
+#0 /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php(743): Symfony\\Component\\Console\\Application->findNamespace()
+#1 /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php(298): Symfony\\Component\\Console\\Application->find()
+#2 /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php(195): Symfony\\Component\\Console\\Application->doRun()
+#3 /www/wwwroot/milastore.cloud/vendor/laravel/framework/src/Illuminate/Foundation/Console/Kernel.php(198): Symfony\\Component\\Console\\Application->run()
+#4 /www/wwwroot/milastore.cloud/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(1235): Illuminate\\Foundation\\Console\\Kernel->handle()
+#5 /www/wwwroot/milastore.cloud/artisan(16): Illuminate\\Foundation\\Application->handleCommand()
+#6 {main}
+"} 
+[2026-08-02 14:03:46] production.ERROR: There are no commands defined in the "bank" namespace. {"exception":"[object] (Symfony\\Component\\Console\\Exception\\NamespaceNotFoundException(code: 0): There are no commands defined in the \"bank\" namespace. at /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php:694)
+[stacktrace]
+#0 /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php(743): Symfony\\Component\\Console\\Application->findNamespace()
+#1 /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php(298): Symfony\\Component\\Console\\Application->find()
+#2 /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php(195): Symfony\\Component\\Console\\Application->doRun()
+#3 /www/wwwroot/milastore.cloud/vendor/laravel/framework/src/Illuminate/Foundation/Console/Kernel.php(198): Symfony\\Component\\Console\\Application->run()
+#4 /www/wwwroot/milastore.cloud/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(1235): Illuminate\\Foundation\\Console\\Kernel->handle()
+#5 /www/wwwroot/milastore.cloud/artisan(16): Illuminate\\Foundation\\Application->handleCommand()
+#6 {main}
+"} 
+[2026-08-02 14:04:01] production.ERROR: There are no commands defined in the "bank" namespace. {"exception":"[object] (Symfony\\Component\\Console\\Exception\\NamespaceNotFoundException(code: 0): There are no commands defined in the \"bank\" namespace. at /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php:694)
+[stacktrace]
+#0 /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php(743): Symfony\\Component\\Console\\Application->findNamespace()
+#1 /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php(298): Symfony\\Component\\Console\\Application->find()
+#2 /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php(195): Symfony\\Component\\Console\\Application->doRun()
+#3 /www/wwwroot/milastore.cloud/vendor/laravel/framework/src/Illuminate/Foundation/Console/Kernel.php(198): Symfony\\Component\\Console\\Application->run()
+#4 /www/wwwroot/milastore.cloud/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(1235): Illuminate\\Foundation\\Console\\Kernel->handle()
+#5 /www/wwwroot/milastore.cloud/artisan(16): Illuminate\\Foundation\\Application->handleCommand()
+#6 {main}
+"} 
+[2026-08-02 14:04:01] production.ERROR: Call to undefined function App\Console\Commands\imap_open() {"exception":"[object] (Error(code: 0): Call to undefined function App\\Console\\Commands\\imap_open() at /www/wwwroot/milastore.cloud/app/Console/Commands/BankParser.php:29)
+[stacktrace]
+#0 /www/wwwroot/milastore.cloud/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(36): App\\Console\\Commands\\BankParser->handle()
+#1 /www/wwwroot/milastore.cloud/vendor/laravel/framework/src/Illuminate/Container/Util.php(43): Illuminate\\Container\\BoundMethod::Illuminate\\Container\\{closure}()
+#2 /www/wwwroot/milastore.cloud/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(96): Illuminate\\Container\\Util::unwrapIfClosure()
+#3 /www/wwwroot/milastore.cloud/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(35): Illuminate\\Container\\BoundMethod::callBoundMethod()
+#4 /www/wwwroot/milastore.cloud/vendor/laravel/framework/src/Illuminate/Container/Container.php(799): Illuminate\\Container\\BoundMethod::call()
+#5 /www/wwwroot/milastore.cloud/vendor/laravel/framework/src/Illuminate/Console/Command.php(211): Illuminate\\Container\\Container->call()
+#6 /www/wwwroot/milastore.cloud/vendor/symfony/console/Command/Command.php(341): Illuminate\\Console\\Command->execute()
+#7 /www/wwwroot/milastore.cloud/vendor/laravel/framework/src/Illuminate/Console/Command.php(180): Symfony\\Component\\Console\\Command\\Command->run()
+#8 /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php(1102): Illuminate\\Console\\Command->run()
+#9 /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php(356): Symfony\\Component\\Console\\Application->doRunCommand()
+#10 /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php(195): Symfony\\Component\\Console\\Application->doRun()
+#11 /www/wwwroot/milastore.cloud/vendor/laravel/framework/src/Illuminate/Foundation/Console/Kernel.php(198): Symfony\\Component\\Console\\Application->run()
+#12 /www/wwwroot/milastore.cloud/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(1235): Illuminate\\Foundation\\Console\\Kernel->handle()
+#13 /www/wwwroot/milastore.cloud/artisan(16): Illuminate\\Foundation\\Application->handleCommand()
+#14 {main}
+"} 
+[2026-08-02 14:04:01] production.ERROR: There are no commands defined in the "bank" namespace. {"exception":"[object] (Symfony\\Component\\Console\\Exception\\NamespaceNotFoundException(code: 0): There are no commands defined in the \"bank\" namespace. at /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php:694)
+[stacktrace]
+#0 /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php(743): Symfony\\Component\\Console\\Application->findNamespace()
+#1 /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php(298): Symfony\\Component\\Console\\Application->find()
+#2 /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php(195): Symfony\\Component\\Console\\Application->doRun()
+#3 /www/wwwroot/milastore.cloud/vendor/laravel/framework/src/Illuminate/Foundation/Console/Kernel.php(198): Symfony\\Component\\Console\\Application->run()
+#4 /www/wwwroot/milastore.cloud/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(1235): Illuminate\\Foundation\\Console\\Kernel->handle()
+#5 /www/wwwroot/milastore.cloud/artisan(16): Illuminate\\Foundation\\Application->handleCommand()
+#6 {main}
+"} 
+[2026-08-02 14:04:16] production.ERROR: There are no commands defined in the "bank" namespace. {"exception":"[object] (Symfony\\Component\\Console\\Exception\\NamespaceNotFoundException(code: 0): There are no commands defined in the \"bank\" namespace. at /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php:694)
+[stacktrace]
+#0 /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php(743): Symfony\\Component\\Console\\Application->findNamespace()
+#1 /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php(298): Symfony\\Component\\Console\\Application->find()
+#2 /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php(195): Symfony\\Component\\Console\\Application->doRun()
+#3 /www/wwwroot/milastore.cloud/vendor/laravel/framework/src/Illuminate/Foundation/Console/Kernel.php(198): Symfony\\Component\\Console\\Application->run()
+#4 /www/wwwroot/milastore.cloud/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(1235): Illuminate\\Foundation\\Console\\Kernel->handle()
+#5 /www/wwwroot/milastore.cloud/artisan(16): Illuminate\\Foundation\\Application->handleCommand()
+#6 {main}
+"} 
+[2026-08-02 14:04:16] production.ERROR: There are no commands defined in the "bank" namespace. {"exception":"[object] (Symfony\\Component\\Console\\Exception\\NamespaceNotFoundException(code: 0): There are no commands defined in the \"bank\" namespace. at /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php:694)
+[stacktrace]
+#0 /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php(743): Symfony\\Component\\Console\\Application->findNamespace()
+#1 /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php(298): Symfony\\Component\\Console\\Application->find()
+#2 /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php(195): Symfony\\Component\\Console\\Application->doRun()
+#3 /www/wwwroot/milastore.cloud/vendor/laravel/framework/src/Illuminate/Foundation/Console/Kernel.php(198): Symfony\\Component\\Console\\Application->run()
+#4 /www/wwwroot/milastore.cloud/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(1235): Illuminate\\Foundation\\Console\\Kernel->handle()
+#5 /www/wwwroot/milastore.cloud/artisan(16): Illuminate\\Foundation\\Application->handleCommand()
+#6 {main}
+"} 
+[2026-08-02 14:04:31] production.ERROR: There are no commands defined in the "bank" namespace. {"exception":"[object] (Symfony\\Component\\Console\\Exception\\NamespaceNotFoundException(code: 0): There are no commands defined in the \"bank\" namespace. at /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php:694)
+[stacktrace]
+#0 /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php(743): Symfony\\Component\\Console\\Application->findNamespace()
+#1 /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php(298): Symfony\\Component\\Console\\Application->find()
+#2 /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php(195): Symfony\\Component\\Console\\Application->doRun()
+#3 /www/wwwroot/milastore.cloud/vendor/laravel/framework/src/Illuminate/Foundation/Console/Kernel.php(198): Symfony\\Component\\Console\\Application->run()
+#4 /www/wwwroot/milastore.cloud/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(1235): Illuminate\\Foundation\\Console\\Kernel->handle()
+#5 /www/wwwroot/milastore.cloud/artisan(16): Illuminate\\Foundation\\Application->handleCommand()
+#6 {main}
+"} 
+[2026-08-02 14:04:31] production.ERROR: There are no commands defined in the "bank" namespace. {"exception":"[object] (Symfony\\Component\\Console\\Exception\\NamespaceNotFoundException(code: 0): There are no commands defined in the \"bank\" namespace. at /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php:694)
+[stacktrace]
+#0 /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php(743): Symfony\\Component\\Console\\Application->findNamespace()
+#1 /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php(298): Symfony\\Component\\Console\\Application->find()
+#2 /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php(195): Symfony\\Component\\Console\\Application->doRun()
+#3 /www/wwwroot/milastore.cloud/vendor/laravel/framework/src/Illuminate/Foundation/Console/Kernel.php(198): Symfony\\Component\\Console\\Application->run()
+#4 /www/wwwroot/milastore.cloud/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(1235): Illuminate\\Foundation\\Console\\Kernel->handle()
+#5 /www/wwwroot/milastore.cloud/artisan(16): Illuminate\\Foundation\\Application->handleCommand()
+#6 {main}
+"} 
+[2026-08-02 14:04:46] production.ERROR: There are no commands defined in the "bank" namespace. {"exception":"[object] (Symfony\\Component\\Console\\Exception\\NamespaceNotFoundException(code: 0): There are no commands defined in the \"bank\" namespace. at /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php:694)
+[stacktrace]
+#0 /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php(743): Symfony\\Component\\Console\\Application->findNamespace()
+#1 /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php(298): Symfony\\Component\\Console\\Application->find()
+#2 /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php(195): Symfony\\Component\\Console\\Application->doRun()
+#3 /www/wwwroot/milastore.cloud/vendor/laravel/framework/src/Illuminate/Foundation/Console/Kernel.php(198): Symfony\\Component\\Console\\Application->run()
+#4 /www/wwwroot/milastore.cloud/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(1235): Illuminate\\Foundation\\Console\\Kernel->handle()
+#5 /www/wwwroot/milastore.cloud/artisan(16): Illuminate\\Foundation\\Application->handleCommand()
+#6 {main}
+"} 
+[2026-08-02 14:04:46] production.ERROR: There are no commands defined in the "bank" namespace. {"exception":"[object] (Symfony\\Component\\Console\\Exception\\NamespaceNotFoundException(code: 0): There are no commands defined in the \"bank\" namespace. at /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php:694)
+[stacktrace]
+#0 /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php(743): Symfony\\Component\\Console\\Application->findNamespace()
+#1 /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php(298): Symfony\\Component\\Console\\Application->find()
+#2 /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php(195): Symfony\\Component\\Console\\Application->doRun()
+#3 /www/wwwroot/milastore.cloud/vendor/laravel/framework/src/Illuminate/Foundation/Console/Kernel.php(198): Symfony\\Component\\Console\\Application->run()
+#4 /www/wwwroot/milastore.cloud/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(1235): Illuminate\\Foundation\\Console\\Kernel->handle()
+#5 /www/wwwroot/milastore.cloud/artisan(16): Illuminate\\Foundation\\Application->handleCommand()
+#6 {main}
+"} 
+[2026-08-02 14:05:01] production.ERROR: There are no commands defined in the "bank" namespace. {"exception":"[object] (Symfony\\Component\\Console\\Exception\\NamespaceNotFoundException(code: 0): There are no commands defined in the \"bank\" namespace. at /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php:694)
+[stacktrace]
+#0 /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php(743): Symfony\\Component\\Console\\Application->findNamespace()
+#1 /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php(298): Symfony\\Component\\Console\\Application->find()
+#2 /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php(195): Symfony\\Component\\Console\\Application->doRun()
+#3 /www/wwwroot/milastore.cloud/vendor/laravel/framework/src/Illuminate/Foundation/Console/Kernel.php(198): Symfony\\Component\\Console\\Application->run()
+#4 /www/wwwroot/milastore.cloud/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(1235): Illuminate\\Foundation\\Console\\Kernel->handle()
+#5 /www/wwwroot/milastore.cloud/artisan(16): Illuminate\\Foundation\\Application->handleCommand()
+#6 {main}
+"} 
+[2026-08-02 14:05:01] production.ERROR: Call to undefined function App\Console\Commands\imap_open() {"exception":"[object] (Error(code: 0): Call to undefined function App\\Console\\Commands\\imap_open() at /www/wwwroot/milastore.cloud/app/Console/Commands/BankParser.php:29)
+[stacktrace]
+#0 /www/wwwroot/milastore.cloud/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(36): App\\Console\\Commands\\BankParser->handle()
+#1 /www/wwwroot/milastore.cloud/vendor/laravel/framework/src/Illuminate/Container/Util.php(43): Illuminate\\Container\\BoundMethod::Illuminate\\Container\\{closure}()
+#2 /www/wwwroot/milastore.cloud/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(96): Illuminate\\Container\\Util::unwrapIfClosure()
+#3 /www/wwwroot/milastore.cloud/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(35): Illuminate\\Container\\BoundMethod::callBoundMethod()
+#4 /www/wwwroot/milastore.cloud/vendor/laravel/framework/src/Illuminate/Container/Container.php(799): Illuminate\\Container\\BoundMethod::call()
+#5 /www/wwwroot/milastore.cloud/vendor/laravel/framework/src/Illuminate/Console/Command.php(211): Illuminate\\Container\\Container->call()
+#6 /www/wwwroot/milastore.cloud/vendor/symfony/console/Command/Command.php(341): Illuminate\\Console\\Command->execute()
+#7 /www/wwwroot/milastore.cloud/vendor/laravel/framework/src/Illuminate/Console/Command.php(180): Symfony\\Component\\Console\\Command\\Command->run()
+#8 /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php(1102): Illuminate\\Console\\Command->run()
+#9 /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php(356): Symfony\\Component\\Console\\Application->doRunCommand()
+#10 /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php(195): Symfony\\Component\\Console\\Application->doRun()
+#11 /www/wwwroot/milastore.cloud/vendor/laravel/framework/src/Illuminate/Foundation/Console/Kernel.php(198): Symfony\\Component\\Console\\Application->run()
+#12 /www/wwwroot/milastore.cloud/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(1235): Illuminate\\Foundation\\Console\\Kernel->handle()
+#13 /www/wwwroot/milastore.cloud/artisan(16): Illuminate\\Foundation\\Application->handleCommand()
+#14 {main}
+"} 
+[2026-08-02 14:05:01] production.ERROR: There are no commands defined in the "bank" namespace. {"exception":"[object] (Symfony\\Component\\Console\\Exception\\NamespaceNotFoundException(code: 0): There are no commands defined in the \"bank\" namespace. at /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php:694)
+[stacktrace]
+#0 /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php(743): Symfony\\Component\\Console\\Application->findNamespace()
+#1 /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php(298): Symfony\\Component\\Console\\Application->find()
+#2 /www/wwwroot/milastore.cloud/vendor/symfony/console/Application.php(195): Symfony\\Component\\Console\\Application->doRun()
+#3 /www/wwwroot/milastore.cloud/vendor/laravel/framework/src/Illuminate/Foundation/Console/Kernel.php(198): Symfony\\Component\\Console\\Application->run()
+#4 /www/wwwroot/milastore.cloud/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(1235): Illuminate\\Foundation\\Console\\Kernel->handle()
+#5 /www/wwwroot/milastore.cloud/artisan(16): Illuminate\\Foundation\\Application->handleCommand()
+#6 {main}
+"} 
