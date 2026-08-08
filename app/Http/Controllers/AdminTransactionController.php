@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
@@ -35,8 +34,8 @@ class AdminTransactionController extends Controller
         ]);
 
         DB::beginTransaction();
-
         try {
+            // 🛡️ GEMBOK TRANSAKSI AKTIF: Mencegah Double Request dari spammer
             $trx = DB::table('transaksi')->where('id', $id)->lockForUpdate()->first();
 
             if (!$trx) {
@@ -44,15 +43,17 @@ class AdminTransactionController extends Controller
                 return response()->json(['success' => false, 'message' => 'Transaksi tidak ditemukan!'], 404);
             }
 
-            // 🔥 LOGIKA DEWA: AUTO-REFUND & AUTO-TARIK SALDO 🔥
+            // 🔥 LOGIKA DEWA: ADMIN PUNYA KUASA TERTINGGI (GOD MODE) 🔥
             $status_lama_gagal = in_array($trx->status, ['Gagal', 'Dibatalkan', 'Skipped']);
             $status_baru_gagal = ($request->status === 'Gagal');
 
             if (!$status_lama_gagal && $status_baru_gagal) {
-                // KASUS 1: Dari Sukses/Pending diubah jadi Gagal -> REFUND
+                // KASUS 1: Dari Sukses/Pending diubah jadi Gagal -> REFUND SALDO
                 DB::table('users')->where('name', $trx->username)->increment('saldo', $trx->harga);
+                
             } elseif ($status_lama_gagal && !$status_baru_gagal) {
-                // KASUS 2: Dari Gagal diubah jadi Sukses/Pending -> TARIK BALIK UANGNYA!
+                // KASUS 2: Dari Gagal diubah jadi Sukses/Pending -> TARIK PAKSA UANGNYA!
+                // 👑 KUASA ADMIN: Jika saldo tidak cukup, biarkan menjadi MINUS (Hutang) untuk akurasi pembukuan.
                 DB::table('users')->where('name', $trx->username)->decrement('saldo', $trx->harga);
             }
 
@@ -75,25 +76,23 @@ class AdminTransactionController extends Controller
             // 🚀 SUNTIKAN NOTIFIKASI SULTAN MELUNCUR 🚀
             // ==========================================================
             if (in_array($request->status, ['Sukses', 'Gagal'])) {
-                // Ambil email member berdasarkan username
                 $userEmail = DB::table('users')->where('name', $trx->username)->value('email');
-                
-                if ($userEmail) {
-                    $judul = ($request->status == 'Sukses') ? "Transaksi Berhasil! ✅" : "Transaksi Gagal ❌";
+                if ($userEmail && method_exists($this, 'kirimNotifSultan')) {
+                    $judul = ($request->status == 'Sukses') ? "Transaksi Berhasil! ✅ " : "Transaksi Gagal ❌ ";
                     $pesan = ($request->status == 'Sukses') 
                         ? "Pesanan " . $trx->kode_layanan . " ke " . $trx->tujuan . " sukses masuk. Cek SN sekarang!" 
                         : "Sori Bosku, pesanan " . $trx->kode_layanan . " gagal. Saldo otomatis dikembalikan!";
-                        
+                    
                     $this->kirimNotifSultan($userEmail, $judul, $pesan);
                 }
             }
             // ==========================================================
 
-            return response()->json(['success' => true, 'message' => 'Status & Saldo berhasil disinkronkan!']);
+            return response()->json(['success' => true, 'message' => 'Eksekusi Mutlak Berhasil! Status & Saldo telah disesuaikan.']);
             
         } catch (\Exception $e) {
             DB::rollBack();
-            return response()->json(['success' => false, 'message' => 'Terjadi kesalahan sistem saat memproses.'], 500);
+            return response()->json(['success' => false, 'message' => 'Terjadi kesalahan sistem: ' . $e->getMessage()], 500);
         }
     }
 }

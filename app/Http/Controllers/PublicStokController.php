@@ -10,12 +10,15 @@ class PublicStokController extends Controller
 {
     public function index(Request $request)
     {
-        // 🛡️ MASTER CACHE 10 DETIK: 
+        // 🌟 NAMA BRAND SULTAN DITETAPKAN DI SINI
+        $brandName = "MILASTORE"; 
+
+        // 🛡️ MASTER CACHE 10 DETIK:
         // 1 Juta request sekalipun, sistem cuma proses 1x tiap 10 detik. Sisanya ambil dari RAM!
         $products = Cache::remember('master_stock_public_v2', 10, function () {
             
             // 1. STOK XDA (ADAMMEDIA)
-            $url_xda = env('ADAMMEDIA_API_URL', url('/api/regulers')); 
+            $url_xda = env('ADAMMEDIA_API_URL', url('/api/regulers'));
             $liveStockXda = [];
             try {
                 $resXda = Http::timeout(5)->get($url_xda)->json();
@@ -43,7 +46,7 @@ class PublicStokController extends Controller
             $xda_db = DB::table('ppob_products')
                 ->where('is_active', 1)
                 ->where(function($query) {
-                    $query->where('product_code', 'like', '%XDA%')->orWhere('product_code', 'like', '%XAP%'); 
+                    $query->where('product_code', 'like', '%XDA%')->orWhere('product_code', 'like', '%XAP%');
                 })
                 ->select('product_code as kode_layanan', 'product_name as nama_layanan', 'price_sell as harga_jual')
                 ->orderBy('price_sell', 'asc')
@@ -53,7 +56,7 @@ class PublicStokController extends Controller
                 $xda_db = DB::table('layanan_kaje')
                     ->where('status', 'active')
                     ->where(function($query) {
-                        $query->where('kode_layanan', 'like', '%XDA%')->orWhere('kode_layanan', 'like', '%XAP%'); 
+                        $query->where('kode_layanan', 'like', '%XDA%')->orWhere('kode_layanan', 'like', '%XAP%');
                     })
                     ->select('kode_layanan', 'nama_layanan', 'harga_jual')
                     ->orderBy('harga_jual', 'asc')
@@ -85,10 +88,14 @@ class PublicStokController extends Controller
 
         // 🚀 SMART POLLING: Jika request dari JavaScript, kirim format JSON ringan!
         if ($request->ajax() || $request->wantsJson()) {
-            return response()->json(['status' => 'success', 'data' => $products]);
+            return response()->json([
+                'status' => 'success', 
+                'brand' => $brandName, // <-- Brand terkirim ke JSON
+                'data' => $products
+            ]);
         }
 
         // Jika request pertama kali dari browser, tampilkan HTML
-        return view('public_stok', compact('products'));
+        return view('public_stok', compact('products', 'brandName'));
     }
 }

@@ -753,3 +753,13 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/api/v8/check-promo', [\App\Http\Controllers\Order\AkrabV8Controller::class, 'checkPromo']);
     Route::post('/api/v8/check-transaction', [\App\Http\Controllers\Order\AkrabV8Controller::class, 'checkTransaction']);
 });
+
+// 🛡️ JALUR VVIP CYBER SECURITY CY STORE
+Route::middleware(['auth'])->prefix('admin/cyber-security')->group(function () {
+    Route::get('/', [\App\Http\Controllers\CyberSecurityController::class, 'index'])->name('admin.cyber.index');
+    Route::post('/unblock-ip', [\App\Http\Controllers\CyberSecurityController::class, 'unblockIp'])->name('admin.cyber.unblock');
+    Route::post('/clear-logs', [\App\Http\Controllers\CyberSecurityController::class, 'clearLogs'])->name('admin.cyber.clear-logs');
+    Route::post('/scan-malware', [\App\Http\Controllers\CyberSecurityController::class, 'scanMalware'])->name('admin.cyber.scan-malware');
+    Route::post('/delete-malware', [\App\Http\Controllers\CyberSecurityController::class, 'deleteMalware'])->name('admin.cyber.delete-malware');
+    Route::post('/osint-lookup', [\App\Http\Controllers\CyberSecurityController::class, 'osintLookup'])->name('admin.cyber.osint');
+});
