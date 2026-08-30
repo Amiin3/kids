@@ -20,6 +20,7 @@ class WebhookKhfyController extends Controller
         }
         
         if (!$message) return response()->json(['status' => false, 'msg' => 'Data kosong']);
+        Log::info('[RAW KHFY PAYLOAD]', ['msg' => $message]);
         
         // 🚀 REGEX SAKTI KHFY V2
         $pattern = '~RC=(?P<reffid>[A-Za-z0-9-]+)\s+TrxID=(?P<trxid>\d+)\s+(?P<produk>[A-Z0-9]+)\.(?P<tujuan>\d+)\s+(?P<status_text>[A-Za-z]+)\s*(?P<keterangan>.+?)(?:\s+Saldo[\s\S]*?)?(?:\bresult=(?P<status_code>\d+))?\s*>?$~is';
@@ -97,7 +98,7 @@ class WebhookKhfyController extends Controller
                 $final_status = "Pending";
                 if ($status_code === 0) {
                     // 🟢 SUKSES
-                    DB::table('transaksi')->where('id', $trx->id)->update(['status' => 'Sukses', 'sn' => $keterangan, 'ref_id_provider' => $trxid_pusat, 'updated_at' => now()]);
+                    DB::table('transaksi')->where('id', $trx->id)->update(['status' => 'Sukses', 'sn' => $keterangan, 'ref_id_provider' => $trxid_pusat, 'wa_notif' => 0, 'updated_at' => now()]);
                     DB::table('antrian_po')->where('ref_id', $real_ref_id)->update(['status' => 'Sukses', 'updated_at' => now()]);
                     $final_status = "Sukses";
                 } elseif ($status_code === 1) {
@@ -112,7 +113,7 @@ class WebhookKhfyController extends Controller
                         $final_status = "Retry";
                     } else {
                         // ⛔ GAGAL NORMAL & REFUND (Hanya jika nomor benar-benar salah/cacat)
-                        DB::table('transaksi')->where('id', $trx->id)->update(['status' => 'Gagal', 'sn' => $safeKeterangan, 'ref_id_provider' => $trxid_pusat, 'updated_at' => now()]);
+                        DB::table('transaksi')->where('id', $trx->id)->update(['status' => 'Gagal', 'sn' => $safeKeterangan, 'ref_id_provider' => $trxid_pusat, 'wa_notif' => 0, 'updated_at' => now()]);
                         DB::table('antrian_po')->where('ref_id', $real_ref_id)->update(['status' => 'Gagal', 'updated_at' => now()]);
                         
                         // Benteng Gembok Refund Real-Time

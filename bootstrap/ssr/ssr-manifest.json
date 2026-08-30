@@ -10,19 +10,19 @@
     "/build/assets/Index-BqsxUYaY.js"
   ],
   "resources/js/Components/DangerButton.jsx": [
-    "/build/assets/DeleteUserForm-lS9StaYO.js"
+    "/build/assets/DeleteUserForm-Hy-SY24R.js"
   ],
   "resources/js/Components/EnablePush.jsx": [
     "/build/assets/AuthenticatedLayout-BMtUGg5W.js"
   ],
   "resources/js/Components/InputError.jsx": [
-    "/build/assets/InputError-CBvD_6aD.js"
+    "/build/assets/TextInput-BP-vnUns.js"
   ],
   "resources/js/Components/InputLabel.jsx": [
     "/build/assets/InputLabel-CE_n4Upz.js"
   ],
   "resources/js/Components/Modal.jsx": [
-    "/build/assets/DeleteUserForm-lS9StaYO.js"
+    "/build/assets/DeleteUserForm-Hy-SY24R.js"
   ],
   "resources/js/Components/NotificationBell.jsx": [
     "/build/assets/AuthenticatedLayout-BMtUGg5W.js"
@@ -37,10 +37,10 @@
     "/build/assets/Index-DF9QNGfJ.js"
   ],
   "resources/js/Components/SecondaryButton.jsx": [
-    "/build/assets/DeleteUserForm-lS9StaYO.js"
+    "/build/assets/DeleteUserForm-Hy-SY24R.js"
   ],
   "resources/js/Components/TextInput.jsx": [
-    "/build/assets/TextInput-DDsS-qQQ.js"
+    "/build/assets/TextInput-BP-vnUns.js"
   ],
   "resources/js/Layouts/AuthenticatedLayout.jsx": [
     "/build/assets/AuthenticatedLayout-BMtUGg5W.js"
@@ -73,7 +73,8 @@
     "/build/assets/DepositManager-B7r-QsNL.js"
   ],
   "resources/js/Pages/Admin/DigiflazzManager.jsx": [
-    "/build/assets/DigiflazzManager-oyYAoRdO.js"
+    "/build/assets/DigiflazzManager-Ssw3kalG.js",
+    "/build/assets/mila-loading-COxa2OH9.css"
   ],
   "resources/js/Pages/Admin/DocAkrab.jsx": [
     "/build/assets/DocAkrab-hLuK1S1R.js"
@@ -136,7 +137,7 @@
     "/build/assets/Index-D68pRC61.js"
   ],
   "resources/js/Pages/Admin/ResellerDiscount.jsx": [
-    "/build/assets/ResellerDiscount-moOtICu_.js"
+    "/build/assets/ResellerDiscount-DcVHuxJL.js"
   ],
   "resources/js/Pages/Admin/Transactions/Index.jsx": [
     "/build/assets/Index-DcVaSMPM.js"
@@ -150,23 +151,26 @@
   "resources/js/Pages/Admin/VpnManager.jsx": [
     "/build/assets/VpnManager-CnkHhfuA.js"
   ],
+  "resources/js/Pages/Admin/WhatsApp/Index.jsx": [
+    "/build/assets/Index-CM2-_X91.js"
+  ],
   "resources/js/Pages/Admin/XlkuEngine.jsx": [
     "/build/assets/XlkuEngine-B2Zsff5g.js"
   ],
   "resources/js/Pages/Auth/ConfirmPassword.jsx": [
-    "/build/assets/ConfirmPassword-Dg1XVwx1.js"
+    "/build/assets/ConfirmPassword-BxM1BFIN.js"
   ],
   "resources/js/Pages/Auth/ForgotPassword.jsx": [
-    "/build/assets/ForgotPassword-D_mlvnXI.js"
+    "/build/assets/ForgotPassword-FU9mIOrL.js"
   ],
   "resources/js/Pages/Auth/Login.jsx": [
     "/build/assets/Login-CuQuE4-X.js"
   ],
   "resources/js/Pages/Auth/Register.jsx": [
-    "/build/assets/Register-Dg93KL9b.js"
+    "/build/assets/Register-pp--CYW1.js"
   ],
   "resources/js/Pages/Auth/ResetPassword.jsx": [
-    "/build/assets/ResetPassword-C3gWoXyT.js"
+    "/build/assets/ResetPassword-DPOjzm01.js"
   ],
   "resources/js/Pages/Auth/SetupWhatsapp.jsx": [
     "/build/assets/SetupWhatsapp-DqcuiG1B.js"
@@ -296,28 +300,31 @@
     "/build/assets/OrderXda-38r0TDu8.js"
   ],
   "resources/js/Pages/Profile/Edit.jsx": [
-    "/build/assets/Edit-B2FbS5-9.js"
+    "/build/assets/Edit-3wsLD7DE.js"
   ],
   "resources/js/Pages/Profile/Index.jsx": [
     "/build/assets/Index-BqsxUYaY.js"
   ],
   "resources/js/Pages/Profile/Partials/DeleteUserForm.jsx": [
-    "/build/assets/DeleteUserForm-lS9StaYO.js"
+    "/build/assets/DeleteUserForm-Hy-SY24R.js"
   ],
   "resources/js/Pages/Profile/Partials/UpdatePasswordForm.jsx": [
-    "/build/assets/UpdatePasswordForm-dmt-D_dQ.js"
+    "/build/assets/UpdatePasswordForm-zvD8TgBd.js"
   ],
   "resources/js/Pages/Profile/Partials/UpdatePinForm.jsx": [
     "/build/assets/UpdatePinForm-CWusCWxK.js"
   ],
   "resources/js/Pages/Profile/Partials/UpdateProfileInformationForm.jsx": [
-    "/build/assets/UpdateProfileInformationForm-zQzd1Wf-.js"
+    "/build/assets/UpdateProfileInformationForm-DmOzctMU.js"
   ],
   "resources/js/Pages/Profile/Referral.jsx": [
     "/build/assets/Referral-BkoZbGfN.js"
   ],
   "resources/js/Pages/Public/MilaTools.jsx": [
     "/build/assets/MilaTools-D-P802CM.js"
+  ],
+  "resources/js/Pages/PublicStok.jsx": [
+    "/build/assets/PublicStok-Bm0snahS.js"
   ],
   "resources/js/Pages/Rekber/Create.jsx": [
     "/build/assets/Create-_5CTHu7T.js"

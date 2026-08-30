@@ -68,7 +68,7 @@ class WebhookDepositController extends Controller
                                 $msg = "💳 *DEPOSIT OTOMATIS SUKSES* 💳\n\n";
                                 $msg .= "💰 Jumlah: *Rp " . number_format($jumlah_saldo ?? 0, 0, ',', '.') . "*\n";
                                 $msg .= "📊 Status: *SUKSES*";
-                                \Illuminate\Support\Facades\Http::timeout(3)->post('http://127.0.0.1:3333/send-notif', ['target' => $wa, 'message' => $msg, 'key' => 'SULTAN_MILA_2026']);
+                                \Illuminate\Support\Facades\Http::timeout(3)->post('http://127.0.0.1:3003/send-notif', ['target' => $wa, 'message' => $msg, 'key' => 'SULTAN_MILA_2026']);
                             }
                         } catch (\Exception $e) {}
                         // --- END AUTO-WA ---
@@ -77,7 +77,7 @@ class WebhookDepositController extends Controller
                             if (substr($wa_target, 0, 1) == '0') $wa_target = '62' . substr($wa_target, 1);
                             $waMsg = "💰 *SALDO MILASTORE MASUK!* 💰\n━━━━━━━━━━━━━━━━━━━━━\n\nMetode: *{$deposit->metode}*\nNominal: *Rp " . number_format($jumlah_saldo, 0, ',', '.') . "*\nStatus: *SUKSES ✅ *\n\n_Diproses otomatis via Bot Mutasi._\nSelamat bertransaksi Bosku! 🚀";
                             try {
-                                Http::timeout(5)->post('http://127.0.0.1:3333/send-notif', ['target' => $wa_target, 'message' => $waMsg, 'key' => 'MILA_SEC_v9B4xK8mP2qL7jW5nC3zR1hT6fD0yX5g']);
+                                Http::timeout(5)->post('http://127.0.0.1:3003/send-notif', ['target' => $wa_target, 'message' => $waMsg, 'key' => 'MILA_SEC_v9B4xK8mP2qL7jW5nC3zR1hT6fD0yX5g']);
                             } catch (\Exception $e) {}
                         }
                     }

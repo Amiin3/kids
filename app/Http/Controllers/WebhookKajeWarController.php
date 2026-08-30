@@ -109,7 +109,7 @@ class WebhookKajeWarController extends Controller
                             }
                             $waMsg .= "\nTerima kasih sudah ikut antrean WAR di *MilaStore*! 👑";
 
-                            Http::timeout(5)->post('http://127.0.0.1:3333/send-notif', [
+                            Http::timeout(5)->post('http://127.0.0.1:3003/send-notif', [
                                 'target' => $wa_target,
                                 'message' => $waMsg,
                                 'key' => 'MILA_SEC_v9B4xK8mP2qL7jW5nC3zR1hT6fD0yX5g'

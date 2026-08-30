@@ -763,3 +763,16 @@ Route::middleware(['auth'])->prefix('admin/cyber-security')->group(function () {
     Route::post('/delete-malware', [\App\Http\Controllers\CyberSecurityController::class, 'deleteMalware'])->name('admin.cyber.delete-malware');
     Route::post('/osint-lookup', [\App\Http\Controllers\CyberSecurityController::class, 'osintLookup'])->name('admin.cyber.osint');
 });
+
+// --- JALUR WEBHOOK KHFY YANG BENAR ---
+Route::any('api/webhook/khfy', [\App\Http\Controllers\WebhookKhfyController::class, 'handle']);
+
+// --- ROUTE ADMIN WHATSAPP SESSION & BOT ---
+Route::middleware(['auth', 'verified', \App\Http\Middleware\IsAdmin::class])->prefix('admin/whatsapp')->name('admin.whatsapp.')->group(function () {
+    Route::get('/', [\App\Http\Controllers\Admin\WhatsAppSessionController::class, 'index'])->name('index');
+    Route::get('/status', [\App\Http\Controllers\Admin\WhatsAppSessionController::class, 'getStatus'])->name('status');
+    Route::get('/logs', [\App\Http\Controllers\Admin\WhatsAppSessionController::class, 'getLogs'])->name('logs');
+    Route::post('/pairing', [\App\Http\Controllers\Admin\WhatsAppSessionController::class, 'requestPairing'])->name('pairing');
+    Route::post('/send-test', [\App\Http\Controllers\Admin\WhatsAppSessionController::class, 'sendTestMessage'])->name('send_test');
+    Route::post('/logout', [\App\Http\Controllers\Admin\WhatsAppSessionController::class, 'logout'])->name('logout');
+});

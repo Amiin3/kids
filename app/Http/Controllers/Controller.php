@@ -1,46 +1,50 @@
 <?php
+
 namespace App\Http\Controllers;
 
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Illuminate\Foundation\Validation\ValidatesRequests;
+use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Cache;
 
-abstract class Controller
+class Controller extends BaseController
 {
-    protected function kirimNotifSultan($email, $judul, $pesan)
-    {
-        try {
-            $url = 'http://localhost:3003/push-notif';
-            $data = json_encode(['email' => $email, 'judul' => $judul, 'pesan' => $pesan]);
-            $ch = curl_init($url);
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-            curl_setopt($ch, CURLOPT_POST, true);
-            curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
-            curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
-            curl_setopt($ch, CURLOPT_TIMEOUT, 2);
-            curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 2);
-            curl_exec($ch);
-            curl_close($ch);
-        } catch (\Exception $e) {}
-    }
+    use AuthorizesRequests, ValidatesRequests;
 
     /**
-     * 🛡️ MESIN DISKON RESELLER V2 (BYPASS CACHE)
+     * 🛡️ MESIN DISKON RESELLER (SMART CACHED)
      */
     protected function hitungHargaReseller($hargaTabel, $hargaModal, $provider, $userLevel)
     {
-        // Debug: Log ke storage/logs/laravel.log untuk intip prosesnya
-        // Log::info("Cek Harga: Prov $provider, Level $userLevel, Harga $hargaTabel");
+        $hargaTabel = (int) $hargaTabel;
+        $hargaModal = (int) $hargaModal;
+        $cleanLevel = strtolower(trim((string) $userLevel));
+        $cleanProv  = strtolower(trim((string) $provider));
 
-        if ($userLevel !== 'reseller' && $userLevel !== 'admin') {
+        // Hanya reseller dan admin yang mendapat potongan
+        if ($cleanLevel !== 'reseller' && $cleanLevel !== 'admin') {
             return $hargaTabel;
         }
 
-        // AMBIL LANGSUNG DARI DB (No Cache biar gak error)
-        $diskon = DB::table('reseller_discounts')->where('provider', $provider)->value('potongan') ?? 0;
+        // Ambil diskon via Cache (otomatis ter-refresh saat admin update)
+        $diskon = (int) Cache::remember(
+            'diskon_reseller_' . $cleanProv,
+            3600,
+            fn () => DB::table('reseller_discounts')
+                ->where('provider', $cleanProv)
+                ->value('potongan') ?? 0
+        );
+
+        if ($diskon <= 0) {
+            return $hargaTabel;
+        }
 
         $hargaAkhir = $hargaTabel - $diskon;
 
         // Safety Net: Gak boleh lebih murah dari modal
-        return max($hargaAkhir, $hargaModal);
+        $batasBawah = ($hargaModal > 0) ? $hargaModal : 1;
+
+        return max($hargaAkhir, $batasBawah);
     }
 }

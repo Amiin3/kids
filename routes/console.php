@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Schedule;
 Schedule::command('khfy:sweeper')->everyMinute()->withoutOverlapping();
 
 // 🔥 JADWAL MESIN MUTASI BANK (TIAP MENIT) 🔥
-Schedule::command('bank:seabank')->everyMinute()->withoutOverlapping();
-Schedule::command('bank:jago')->everyMinute()->withoutOverlapping();
+        // Schedule::command('bank:seabank')->everyMinute()->withoutOverlapping();
+        // Schedule::command('bank:jago')->everyMinute()->withoutOverlapping();
 // Atau kalau lu pake Omni-Parser
-Schedule::command('bank:parse')->everyMinute()->withoutOverlapping();
+        // Schedule::command('bank:parse')->everyMinute()->withoutOverlapping();

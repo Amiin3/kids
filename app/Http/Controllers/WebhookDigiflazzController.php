@@ -41,9 +41,9 @@ class WebhookDigiflazzController extends Controller
                 if ($trx->status !== 'Gagal') {
                     DB::table('users')->where('name', $trx->username)->increment('saldo', $trx->harga);
                 }
-                DB::table('transaksi')->where('ref_id', $ref_id)->update(['status' => 'Gagal', 'sn' => $sn, 'updated_at' => now()]);
+                DB::table('transaksi')->where('ref_id', $ref_id)->update(['status' => 'Gagal', 'sn' => $sn, 'wa_notif' => 0, 'updated_at' => now()]);
             } elseif ($status === 'Sukses') {
-                DB::table('transaksi')->where('ref_id', $ref_id)->update(['status' => 'Sukses', 'sn' => $sn, 'updated_at' => now()]);
+                DB::table('transaksi')->where('ref_id', $ref_id)->update(['status' => 'Sukses', 'sn' => $sn, 'wa_notif' => 0, 'updated_at' => now()]);
             } else {
                 DB::table('transaksi')->where('ref_id', $ref_id)->update(['sn' => $sn, 'updated_at' => now()]);
                 DB::commit();
@@ -74,7 +74,7 @@ class WebhookDigiflazzController extends Controller
                         $pesan = ($status === 'Sukses') 
                             ? "Mantap! Pesanan {$trx->kode_layanan} ke {$trx->tujuan} SUKSES. SN: $sn"
                             : "Pesanan {$trx->kode_layanan} GAGAL. Saldo balik!";
-                        $this->kirimNotifSultan($userEmail, $judul, $pesan);
+                        $this->kirimNotifSultan($userEmail, $judul, $pesan, $trx);
                     }
                 } catch (\Throwable $e) { Log::error("Err Notif Sultan: ".$e->getMessage()); }
             }
@@ -87,33 +87,24 @@ class WebhookDigiflazzController extends Controller
         }
     }
 
-    protected function kirimNotifSultan($email, $judul, $pesan) {
+    protected function kirimNotifSultan($email, $judul, $pesan, $trx = null) {
         Log::info("[NOTIF SULTAN] Ke: $email | Judul: $judul");
-                // --- AUTO-WA DIRECT (Transaksi) ---
         try {
-            if (isset($transaksi) || isset($deposit) || isset($trx)) {
-                $model = $transaksi ?? $deposit ?? $trx ?? null;
-                if ($model) {
-                    $uname = $model->username ?? $model->user_id ?? null;
-                    $status = strtoupper($model->status ?? 'UNKNOWN');
-                    $user = \Illuminate\Support\Facades\DB::table('users')->where('name', $uname)->orWhere('username', $uname)->first();
+            if ($trx) {
+                $uname = $trx->username ?? null;
+                $status = strtoupper($trx->status ?? 'UNKNOWN');
+                $user = \Illuminate\Support\Facades\DB::table('users')->where('name', $uname)->orWhere('username', $uname)->first();
+                
+                if ($user && !empty($user->whatsapp ?? $user->phone)) {
+                    $wa = preg_replace('/[^0-9]/', '', $user->whatsapp ?? $user->phone);
+                    if (substr($wa, 0, 1) == '0') $wa = '62' . substr($wa, 1);
                     
-                    if ($user && !empty($user->whatsapp ?? $user->phone)) {
-                        $wa = preg_replace('/[^0-9]/', '', $user->whatsapp ?? $user->phone);
-                        if (substr($wa, 0, 1) == '0') $wa = '62' . substr($wa, 1);
-                        
-                        if ('Transaksi' == 'Transaksi') {
-                            $msg = "🔄 *UPDATE TRANSAKSI* 🔄\n\n📦 Produk: *" . ($model->produk ?? '-') . "*\n🎯 Tujuan: " . ($model->tujuan ?? '-') . "\n🧾 SN: " . ($model->sn ?? $model->keterangan ?? '-') . "\n📊 Status: *" . $status . "*";
-                        } else {
-                            $msg = "💳 *UPDATE DEPOSIT* 💳\n\n💰 Jumlah: *Rp " . number_format($model->jumlah ?? $model->amount ?? 0, 0, ',', '.') . "*\n📊 Status: *" . $status . "*";
-                        }
-                        
-                        \Illuminate\Support\Facades\Http::timeout(3)->post('http://127.0.0.1:3333/send-notif', ['target' => $wa, 'message' => $msg, 'key' => 'SULTAN_MILA_2026']);
-                    }
+                    $msg = "🔄 *UPDATE TRANSAKSI* 🔄\n\n📦 Produk: *" . ($trx->kode_layanan ?? '-') . "*\n🎯 Tujuan: " . ($trx->tujuan ?? '-') . "\n🧾 SN: " . ($trx->sn ?? '-') . "\n📊 Status: *" . $status . "*";
+                    
+                    \Illuminate\Support\Facades\Http::timeout(3)->post('http://127.0.0.1:3333/send-notif', ['target' => $wa, 'message' => $msg, 'key' => 'SULTAN_MILA_2026']);
                 }
             }
         } catch (\Exception $e) {}
-        // --- END AUTO-WA ---
         return true;
     }
 }

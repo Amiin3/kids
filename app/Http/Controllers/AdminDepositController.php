@@ -75,7 +75,7 @@ class AdminDepositController extends Controller {
                     $msg = "💳 *UPDATE DEPOSIT* 💳\n\n";
                     $msg .= "💰 Jumlah: *Rp " . number_format($deposit->amount ?? $deposit->total_bayar ?? 0, 0, ',', '.') . "*\n";
                     $msg .= "📊 Status: *" . strtoupper($request->status) . "*";
-                    \Illuminate\Support\Facades\Http::timeout(3)->post('http://127.0.0.1:3333/send-notif', ['target' => $wa, 'message' => $msg, 'key' => 'SULTAN_MILA_2026']);
+                    \Illuminate\Support\Facades\Http::timeout(3)->post('http://127.0.0.1:3003/send-notif', ['target' => $wa, 'message' => $msg, 'key' => 'SULTAN_MILA_2026']);
                 }
             }
         } catch (\Exception $e) {}

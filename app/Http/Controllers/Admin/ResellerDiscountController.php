@@ -9,26 +9,49 @@ use Inertia\Inertia;
 
 class ResellerDiscountController extends Controller
 {
+    private array $providers = ['khfy', 'adam', 'kaje'];
+
     public function index()
     {
-        $discounts = DB::table('reseller_discounts')->pluck('potongan', 'provider')->toArray();
+        $discounts = DB::table('reseller_discounts')
+            ->pluck('potongan', 'provider')
+            ->toArray();
+
         return Inertia::render('Admin/ResellerDiscount', [
-            'khfy' => $discounts['khfy'] ?? 0,
-            'adam' => $discounts['adam'] ?? 0,
-            'kaje' => $discounts['kaje'] ?? 0,
+            'khfy' => (int) ($discounts['khfy'] ?? 0),
+            'adam' => (int) ($discounts['adam'] ?? 0),
+            'kaje' => (int) ($discounts['kaje'] ?? 0),
         ]);
     }
 
     public function update(Request $request)
     {
-        $providers = ['khfy', 'adam', 'kaje'];
-        foreach ($providers as $prov) {
+        // 1. Validasi ketat (Wajib angka positif)
+        $rules = [];
+        foreach ($this->providers as $prov) {
+            $rules[$prov] = 'nullable|numeric|min:0|max:10000000';
+        }
+        $validated = $request->validate($rules);
+
+        // 2. Eksekusi simpan & reset cache
+        foreach ($this->providers as $prov) {
+            $potongan = (int) ($validated[$prov] ?? 0);
+
             DB::table('reseller_discounts')->updateOrInsert(
                 ['provider' => $prov],
-                ['potongan' => $request->$prov ?? 0, 'updated_at' => now()]
+                [
+                    'potongan'   => $potongan,
+                    'created_at' => now(),
+                    'updated_at' => now()
+                ]
             );
-            Cache::forget('diskon_reseller_'.$prov); // Clear cache seketika
+
+            // Bersihkan cache spesifik provider & cache global
+            Cache::forget('diskon_reseller_' . $prov);
         }
+
+        Cache::forget('all_reseller_discounts');
+
         return back()->with('success', '✅ Boom! Diskon Reseller Berhasil Diterapkan!');
     }
 }
