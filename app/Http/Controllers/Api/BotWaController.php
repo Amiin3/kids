@@ -83,14 +83,13 @@ class BotWaController extends Controller
 
             $command = $request->input('command');
 
-            // 0. JALUR PUSH NOTIFIKASI APLIKASI (ANTI FCM CRASH)
+            // 0. JALUR PUSH NOTIFIKASI APLIKASI
             if ($command === 'push_notif_app') {
                 $targetUid = $request->input('user_id');
                 $targetU = DB::table('users')->where('id', $targetUid)->first();
                 $tok = $targetU->fcm_token ?? $targetU->push_token ?? null;
                 if ($tok) {
-                    // Cukup kirim Token, Judul, dan Pesan (Bypass param ke-4 agar FcmHelper memakai default string)
-                    \App\Helpers\FcmHelper::sendNotification($tok, $request->input('title'), $request->input('body'));
+                    FcmHelper::sendNotification($tok, $request->input('title'), $request->input('body'));
                 }
                 return response()->json(['status' => true]);
             }
@@ -286,7 +285,7 @@ class BotWaController extends Controller
             $adminCmds = ['acc', 'tolak', 'addsaldo', 'bc', 'addbc', 'listbc', 'delbc'];
             if (in_array($cmdAi, $adminCmds)) $command = 'admin_' . $cmdAi;
 
-            if (str_starts_with((string)$command, 'admin_') || $command === 'menu_admin') {
+            if (str_starts_with((string)$command, 'admin_') || $command === 'menu_admin' || $cmdAi === 'admin' || $cmdAi === 'panel') {
                 $userLevel = isset($user->level) ? strtolower(trim((string)$user->level)) : 'member';
                 $userRole  = isset($user->role) ? strtolower(trim((string)$user->role)) : 'member';
                 if (!in_array($userLevel, ['admin', 'owner', 'superadmin', 'bos']) && !in_array($userRole, ['admin', 'owner', 'superadmin', 'bos'])) {
@@ -363,7 +362,7 @@ class BotWaController extends Controller
                     return response()->json(['status' => true, 'message' => "🗑️ *BROADCAST DIHAPUS!*\nJadwal ID $id tidak akan dikirim lagi."]);
                 }
 
-                if ($command === 'menu_admin') {
+                if ($command === 'menu_admin' || $cmdAi === 'admin' || $cmdAi === 'panel' || $cmdAi === '6') {
                     $total_member = (int) DB::table('users')->count();
                     $total_saldo  = (float) DB::table('users')->sum('saldo');
                     $trx_hari_ini = (int) DB::table('transaksi')->whereDate('tanggal', date('Y-m-d'))->count();
@@ -387,12 +386,12 @@ class BotWaController extends Controller
             }
 
             // =========================================================
-            // 6. ROUTING MAP KATALOG & CEK KUOTA
+            // 6. ROUTING MAP KATALOG, SALAM & PINTASAN
             // =========================================================
             $routingMap = [
                 '1' => 'menu_xla', '2' => 'menu_pln', '3' => 'menu_xda', '4' => 'menu_data', '5' => 'menu_aktif',
                 '6' => 'menu_admin', 'admin' => 'menu_admin', 'panel' => 'menu_admin',
-                'p' => 'main_menu', 'menu' => 'main_menu',
+                'p' => 'main_menu', 'menu' => 'main_menu', 'start' => 'main_menu', 'halo' => 'main_menu', 'hai' => 'main_menu', 'hi' => 'main_menu', 'help' => 'main_menu', 'bantuan' => 'main_menu', 'tes' => 'main_menu', 'ping' => 'main_menu',
                 'depo' => 'deposit_create', 'deposit' => 'deposit_create', 'batal' => 'deposit_cancel',
                 'cek' => 'cek_kuota', 'cekkuota' => 'cek_kuota', 'saldo' => 'cek_saldo'
             ];
@@ -401,26 +400,16 @@ class BotWaController extends Controller
                 $command = $routingMap[$cmdAi];
             }
 
+            // Deteksi Otomatis Format Order Langsung (Misal: X1 081916526445 atau A2 08123456789)
+            if (empty($command) && preg_match('/^(X|A|V|DT|M)\d+$/i', $parts[0] ?? '') && isset($parts[1]) && strlen(preg_replace('/[^0-9]/', '', $parts[1])) >= 5) {
+                $command = 'order_akrab';
+            }
+
             if ($command === 'cek_saldo' || $cmdAi === 'saldo') {
                 return response()->json([
                     'status'  => true,
                     'message' => "💳 *INFORMASI SALDO*\n━━━━━━━━━━━━━━━━━━━━━━\n👤 *Nama:* {$user->name}\n📱 *Nomor:* {$user->whatsapp}\n💰 *Saldo:* Rp " . number_format($user->saldo, 0, ',', '.') . "\n\n_Ketik `.depo` untuk top up saldo._"
                 ]);
-            }
-
-            // CS AI Interceptor (Gemini) jika pesan bukan perintah sistem
-            $sysCmds = array_merge(array_keys($routingMap), $adminCmds, ['order', 'beli', 'ping', 'help', 'saldo', 'cek', 'cekkuota', 'cek_kuota', 'tagihan', 'login', 'daftar', 'register', 'verifikasi', 'war_sikat', 'sikat']);
-            if ($user && $pesanBersih !== '' && !in_array($cmdAi, $sysCmds) && empty($command)) {
-                $geminiKey = env('GEMINI_API_KEY', '');
-                if (!empty($geminiKey)) {
-                    try {
-                        $res = Http::timeout(6)->post("https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=" . $geminiKey, [
-                            'contents' => [['parts' => [['text' => "Kamu Mila AI, customer service ramah MilaStore. User '{$user->name}' mengirim pesan: '{$pesanBersih}'. Balas dengan ramah, singkat, dan arahkan mengetik 'menu' jika ingin bertransaksi."]]]]
-                        ]);
-                        $aiResp = $res->json()['candidates'][0]['content']['parts'][0]['text'] ?? null;
-                        if ($aiResp) return response()->json(['status' => true, 'message' => "🤖 *Mila AI - MILASTORE*\n\n" . trim($aiResp)]);
-                    } catch (\Throwable $e) {}
-                }
             }
 
             // =========================================================
@@ -504,7 +493,7 @@ class BotWaController extends Controller
                     $hargaFinal = $this->getHargaFinalWa($p, "khfy", $user);
                     $teks .= " *[ X" . ($i + 1) . " ]* {$p->nama_layanan}\n  └ 🏷️ *Rp " . number_format($hargaFinal, 0, ',', '.') . "* | 📦 $stIcon *$sisa*{$desc}\n\n";
                 }
-                $teks .= "└┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈\n⚡ *ORDER:* `.order [KODE] [NO_HP]`\n↪️ _Ketik *p* untuk kembali_";
+                $teks .= "└┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈\n⚡ *ORDER:* `.order [KODE] [NO_HP]`\nContoh: `.order X1 081916526445`\n↪️ _Ketik *p* untuk kembali_";
                 return response()->json(['status' => true, 'message' => (string)$teks]);
             }
 
@@ -527,7 +516,7 @@ class BotWaController extends Controller
                     $hargaFinal = $this->getHargaFinalWa($p, "kaje", $user);
                     $teks .= " *[ A" . ($i + 1) . " ]* {$p->nama_layanan}\n  └ 🏷️ *Rp " . number_format($hargaFinal, 0, ',', '.') . "* | 📦 $stIcon *$sisa*{$desc}\n\n";
                 }
-                $teks .= "└┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈\n⚡ *ORDER:* `.order [KODE] [NO_HP]`\n↪️ _Ketik *p* untuk kembali_";
+                $teks .= "└┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈\n⚡ *ORDER:* `.order [KODE] [NO_HP]`\nContoh: `.order A1 081916526445`\n↪️ _Ketik *p* untuk kembali_";
                 return response()->json(['status' => true, 'message' => (string)$teks]);
             }
 
@@ -559,7 +548,7 @@ class BotWaController extends Controller
                     $hargaFinal = $this->getHargaFinalWa($p, "adam", $user);
                     $teks .= " *[ V" . ($i + 1) . " ]* {$p->nama_layanan}{$badge}\n  └ 🏷️ *Rp " . number_format($hargaFinal, 0, ',', '.') . "* | 📦 $stIcon *$sisa*{$desc}\n\n";
                 }
-                $teks .= "└┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈\n⚡ *ORDER:* `.order [KODE] [NO_HP]`\n↪️ _Ketik *p* untuk kembali_";
+                $teks .= "└┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈\n⚡ *ORDER:* `.order [KODE] [NO_HP]`\nContoh: `.order V1 081916526445`\n↪️ _Ketik *p* untuk kembali_";
                 return response()->json(['status' => true, 'message' => (string)$teks]);
             }
 
@@ -574,7 +563,7 @@ class BotWaController extends Controller
                         $teks .= " *[ DT" . ($i + 1) . " ]* {$p->nama_layanan}\n  └ 🏷️ *Rp " . number_format($p->harga_jual, 0, ',', '.') . "*{$desc}\n\n";
                     }
                 }
-                $teks .= "└┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈\n⚡ *ORDER:* `.order [KODE] [NO_HP]`\n↪️ _Ketik *p* untuk kembali_";
+                $teks .= "└┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈\n⚡ *ORDER:* `.order [KODE] [NO_HP]`\nContoh: `.order DT1 081916526445`\n↪️ _Ketik *p* untuk kembali_";
                 return response()->json(['status' => true, 'message' => (string)$teks]);
             }
 
@@ -589,7 +578,7 @@ class BotWaController extends Controller
                         $teks .= " *[ M" . ($i + 1) . " ]* {$p->nama_layanan}\n  └ 🏷️ *Rp " . number_format($p->harga_jual, 0, ',', '.') . "*{$desc}\n\n";
                     }
                 }
-                $teks .= "└┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈\n⚡ *ORDER:* `.order [KODE] [NO_HP]`\n↪️ _Ketik *p* untuk kembali_";
+                $teks .= "└┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈\n⚡ *ORDER:* `.order [KODE] [NO_HP]`\nContoh: `.order M1 081916526445`\n↪️ _Ketik *p* untuk kembali_";
                 return response()->json(['status' => true, 'message' => (string)$teks]);
             }
 
@@ -608,7 +597,7 @@ class BotWaController extends Controller
                 $all_payments = DB::table('payment_settings')->get();
                 $payments = [];
                 foreach ($all_payments as $p) {
-                    if ($p->metode !== 'QRIS') $payments[] = $p;
+                    $payments[] = $p;
                 }
 
                 $cek_pending = DB::table('deposits')->where('user_id', $user->id)->where('status', 'Pending')->first();
@@ -675,10 +664,18 @@ class BotWaController extends Controller
             // =========================================================
             // 10. SISTEM TRANSAKSI (.order & .sikat / war)
             // =========================================================
-            if ($command === 'order_akrab' || $command === 'war_sikat' || $cmdAi === 'order' || $cmdAi === 'beli' || $cmdAi === 'sikat') {
-                $kode_input = strtoupper($request->input('kode') ?? $parts[1] ?? '');
-                $selected = null;
+            if ($command === 'order_akrab' || $command === 'war_sikat' || $cmdAi === 'order' || $cmdAi === 'beli' || $cmdAi === 'sikat' || preg_match('/^(X|A|V|DT|M)\d+$/i', $cmdAi)) {
+                
+                // Jika formatnya langsung "X1 081916526445"
+                if (preg_match('/^(X|A|V|DT|M)\d+$/i', $cmdAi)) {
+                    $kode_input = strtoupper($cmdAi);
+                    $target_raw = $parts[1] ?? '';
+                } else {
+                    $kode_input = strtoupper($request->input('kode') ?? $parts[1] ?? '');
+                    $target_raw = $request->input('target') ?? $parts[2] ?? '';
+                }
 
+                $selected = null;
                 $akrabXla = DB::table('layanan_khfy')->where('kode_layanan', 'like', 'XLA%')->where('harga_jual', '>', 0)->get();
                 $akrabXda = DB::table('layanan_kaje')->where(fn($q) => $q->where('kode_layanan', 'like', 'KDA%')->orWhere('kode_layanan', 'like', 'PDA%'))->where('harga_jual', '>', 0)->get();
                 $adamProducts = DB::table('ppob_products')->select('id', 'product_code as kode_layanan', 'product_name as nama_layanan', 'price_sell as harga_jual', 'description as deskripsi', 'is_active as status')->where('provider_name', 'ADAMMEDIA')->where('price_sell', '>', 0)->where(function($q) { $q->where('product_code', 'like', 'XDA%')->orWhere('product_code', 'like', 'XAP%'); })->get();
@@ -705,11 +702,10 @@ class BotWaController extends Controller
                 $isDigi = DB::table('layanan')->where('kode_layanan', $selected->kode_layanan)->exists();
                 $isAdam = DB::table('ppob_products')->where('provider_name', 'ADAMMEDIA')->where('product_code', $selected->kode_layanan)->exists();
 
-                $target_input = $request->input('target') ?? $parts[2] ?? '';
-                $numbers = array_values(array_unique(array_filter(preg_split('/[\r\n, ]+/', $target_input), fn($n) => strlen(preg_replace('/[^0-9]/', '', $n)) >= 5)));
+                $numbers = array_values(array_unique(array_filter(preg_split('/[\r\n, ]+/', $target_raw), fn($n) => strlen(preg_replace('/[^0-9]/', '', $n)) >= 5)));
 
                 if (empty($numbers)) {
-                    return response()->json(['status' => false, 'message' => "❌ Nomor tujuan belum diisi!\nFormat: `.order [KODE] [NOMOR_HP]`"]);
+                    return response()->json(['status' => false, 'message' => "❌ Nomor tujuan belum diisi!\nFormat: `.order [KODE] [NOMOR_HP]`\nContoh: `.order {$kode_input} 081916526445`"]);
                 }
 
                 $provKey = $isKaje ? 'kaje' : ($isAdam ? 'adam' : ($isDigi ? 'digiflazz' : 'khfy'));
@@ -866,7 +862,19 @@ class BotWaController extends Controller
                 }
             }
 
-            return response()->json(['status' => true, 'message' => "🔧 Perintah tidak dikenali. Ketik *menu* untuk melihat opsi."]);
+            // CS AI Gemini Fallback
+            $geminiKey = env('GEMINI_API_KEY', '');
+            if (!empty($geminiKey)) {
+                try {
+                    $res = Http::timeout(6)->post("https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=" . $geminiKey, [
+                        'contents' => [['parts' => [['text' => "Kamu Mila AI, CS ramah MilaStore. User '{$user->name}' mengirim: '{$pesanBersih}'. Balas singkat, ramah, dan sarankan ketik 'menu' jika butuh bantuan bertransaksi."]]]]
+                    ]);
+                    $aiResp = $res->json()['candidates'][0]['content']['parts'][0]['text'] ?? null;
+                    if ($aiResp) return response()->json(['status' => true, 'message' => "🤖 *Mila AI*\n\n" . trim($aiResp)]);
+                } catch (\Throwable $e) {}
+            }
+
+            return response()->json(['status' => true, 'message' => "🔧 Perintah tidak dikenali. Ketik *menu* untuk melihat opsi pilihan."]);
         } catch (\Throwable $e) {
             return response()->json(['status' => false, 'message' => '🚨 Fatal Error: ' . $e->getMessage()]);
         }

@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
@@ -97,7 +98,6 @@ class AdminKhfyController extends Controller
         $aksi = $request->action;
         $db = DB::connection();
 
-        // 🚀 FITUR 1: BATALKAN 1 TRX SPESIFIK & REFUND
         if ($aksi == 'cancel_ref') {
             $ref = $request->ref_id;
             DB::beginTransaction();
@@ -115,14 +115,12 @@ class AdminKhfyController extends Controller
             } catch (\Exception $e) { DB::rollBack(); return response()->json(['status' => 'error', 'log' => "Error: " . $e->getMessage()]); }
         }
 
-        // 🚀 FITUR 2: REFRESH / PAKSA KEMBALI KE MENUNGGU
         if ($aksi == 'refresh_ref') {
             $ref = $request->ref_id;
             $db->table('antrian_po')->where('ref_id', $ref)->update(['status' => 'Menunggu', 'updated_at' => now()]);
             return response()->json(['status' => 'info', 'log' => "♻️ TRX $ref dipaksa antre ulang (Menunggu)."]);
         }
 
-        // 🚀 FITUR 3: KOSONGKAN SELURUH ANTREAN (KIAMAT)
         if ($aksi == 'cancel_all') {
             DB::beginTransaction();
             try {
@@ -139,7 +137,6 @@ class AdminKhfyController extends Controller
             } catch (\Exception $e) { DB::rollBack(); return response()->json(['status' => 'error', 'log' => "Error: " . $e->getMessage()]); }
         }
 
-        // 🚀 FITUR 4: SKIP PRODUK MASAL
         if ($aksi == 'skip') {
             $kode = $request->kode;
             DB::beginTransaction();
@@ -157,13 +154,11 @@ class AdminKhfyController extends Controller
             } catch (\Exception $e) { DB::rollBack(); return response()->json(['status' => 'error', 'log' => "Error: " . $e->getMessage()]); }
         }
 
-        // 🚀 FITUR 5: KALIBRASI DEWA (TANPA BATAS WAKTU)
         if ($aksi == 'kalibrasi') {
             set_time_limit(0);
             $khfy_url = rtrim(env("KHFY_URL", "https://panel.khfy-store.com/api_v2"), '/');
             $api_key = trim(env("KHFY_API_KEY"));
             
-            // 🔥 MENGAMBIL SEMUA TRANSAKSI YANG NYANGKUT TANPA PEDULI WAKTU!
             $ghosts = DB::table("antrian_po")->whereNotIn("status", ["Sukses", "Gagal", "Dibatalkan"])->get();
             if ($ghosts->isEmpty()) return response()->json(['status' => 'info', 'log' => "🧹 KALIBRASI: Radar bersih, tidak ada yang nyangkut."]);
             

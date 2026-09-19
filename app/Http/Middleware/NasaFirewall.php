@@ -23,6 +23,7 @@ class NasaFirewall
         if (in_array($ip, $whitelistIPs) || $warEngineKey === 'SULTAN_MILA_2026') return $next($request);
 
         $whitelistRoutes = ['api/telegram/*', 'api/telegram/webhook', 'webhook/*', 'api/payment/*', 'api/callback/*', 'api/war-machine/*', 'socket.io/*', 'socket.io'];
+        if (str_contains($request->path(), "webhook") || str_contains($request->path(), "khfy") || str_contains($request->path(), "digiflazz") || str_contains($request->path(), "kaje") || str_contains($request->path(), "adammedia") || str_contains($request->path(), "bot-wa")) return $next($request);
         foreach ($whitelistRoutes as $route) {
             if ($request->is($route)) return $next($request);
         }

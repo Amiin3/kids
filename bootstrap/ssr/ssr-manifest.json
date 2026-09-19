@@ -31,7 +31,7 @@
     "/build/assets/PrimaryButton-DgVfVBwo.js"
   ],
   "resources/js/Components/PushRegister.jsx": [
-    "/build/assets/Dashboard-CIh7cShE.js"
+    "/build/assets/Dashboard-s7wdPnpY.js"
   ],
   "resources/js/Components/PushToggle.jsx": [
     "/build/assets/Index-DF9QNGfJ.js"
@@ -131,7 +131,7 @@
     "/build/assets/PaymentSetting-B5lfoUxp.js"
   ],
   "resources/js/Pages/Admin/PromoManager.jsx": [
-    "/build/assets/PromoManager-BJh-HRQ4.js"
+    "/build/assets/PromoManager-BGUkZQm4.js"
   ],
   "resources/js/Pages/Admin/Rekber/Index.jsx": [
     "/build/assets/Index-D68pRC61.js"
@@ -188,7 +188,7 @@
     "/build/assets/Dashboard-uO_8Udzu.js"
   ],
   "resources/js/Pages/Dashboard.jsx": [
-    "/build/assets/Dashboard-CIh7cShE.js"
+    "/build/assets/Dashboard-s7wdPnpY.js"
   ],
   "resources/js/Pages/Deposit/Index.jsx": [
     "/build/assets/Index-JenPkbyJ.js"
@@ -351,7 +351,7 @@
     "/build/assets/History-B6Pzz2gW.js"
   ],
   "resources/js/Pages/User/Deposit.jsx": [
-    "/build/assets/Deposit-Csz0ORzt.js"
+    "/build/assets/Deposit-DaUU-FNC.js"
   ],
   "resources/js/Pages/User/History.jsx": [
     "/build/assets/History-zXOVXkqV.js"

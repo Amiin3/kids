@@ -776,3 +776,36 @@ Route::middleware(['auth', 'verified', \App\Http\Middleware\IsAdmin::class])->pr
     Route::post('/send-test', [\App\Http\Controllers\Admin\WhatsAppSessionController::class, 'sendTestMessage'])->name('send_test');
     Route::post('/logout', [\App\Http\Controllers\Admin\WhatsAppSessionController::class, 'logout'])->name('logout');
 });
+
+// 🚀 WEBHOOK KAJE & OKCONNECT SULTAN
+Route::any('/api/webhook/kaje', [\App\Http\Controllers\WebhookKajeController::class, 'handle']);
+Route::any('/api/callback/okconnect', [\App\Http\Controllers\OkeCallbackController::class, 'handle']);
+
+// 📱 TELEGRAM MINI APP MANAGEMENT
+Route::prefix('telegram/management')->group(function () {
+    Route::get('/', [\App\Http\Controllers\TelegramManagementController::class, 'index'])->name('telegram.management.index');
+    Route::get('/data', [\App\Http\Controllers\TelegramManagementController::class, 'getDashboardData'])->name('telegram.management.data');
+    Route::post('/scan', [\App\Http\Controllers\TelegramManagementController::class, 'runScan'])->name('telegram.management.scan');
+    Route::post('/unblock', [\App\Http\Controllers\TelegramManagementController::class, 'unblockIp'])->name('telegram.management.unblock');
+    Route::post('/clear-cache', [\App\Http\Controllers\TelegramManagementController::class, 'clearCache'])->name('telegram.management.clear_cache');
+    Route::post('/osint', [\App\Http\Controllers\TelegramManagementController::class, 'osintLookup'])->name('telegram.management.osint');
+});
+
+// 🚀 WEBHOOK OKE CONNECT (FIX TYPO & DUAL ALIAS)
+Route::any('/api/callback/okeconnect', [\App\Http\Controllers\OkeCallbackController::class, 'handle']);
+Route::any('/api/callback/okconnect', [\App\Http\Controllers\OkeCallbackController::class, 'handle']);
+Route::any('/callback/okeconnect', [\App\Http\Controllers\OkeCallbackController::class, 'handle']);
+
+// 📢 RUTE UPDATE PROMO MULTIPART
+Route::match(['put', 'post'], '/admin/promo/{id}', [\App\Http\Controllers\PromoController::class, 'update'])->middleware(['auth']);
+
+// 📢 RUTE MANAJEMEN PROMO (FIX UPLOAD & DELETE)
+Route::middleware(['auth'])->group(function () {
+    Route::post('/admin/promo/update/{id}', [\App\Http\Controllers\PromoController::class, 'update']);
+    Route::delete('/admin/promo/{id}', [\App\Http\Controllers\PromoController::class, 'destroy']);
+});
+
+// 🚀 FIX RUTE PROMO (ANTI ERROR 405 & GAMBAR BLANK)
+Route::post('/admin/promo/update/{id}', [\App\Http\Controllers\PromoController::class, 'update'])->middleware(['auth']);
+Route::post('/admin/promo/delete/{id}', [\App\Http\Controllers\PromoController::class, 'destroy'])->middleware(['auth']);
+Route::get('/api/active-promos', [\App\Http\Controllers\PromoController::class, 'apiActive']);

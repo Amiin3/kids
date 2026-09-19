@@ -14,18 +14,27 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        $middleware->append(\App\Http\Middleware\NasaFirewall::class); 
+        $middleware->append(\App\Http\Middleware\NasaFirewall::class);
         $middleware->trustProxies(at: '*');
         $middleware->append(\App\Http\Middleware\CheckMaintenanceMode::class);
         $middleware->web(append: [
-            // \App\Http\Middleware\AntiMalingSession::class,
-            \App\Http\Middleware\PreventInertiaCaching::class, // 🛡️ OBAT ANTI CACHE BROWSER
+            \App\Http\Middleware\PreventInertiaCaching::class,
         ]);
-        $middleware->validateCsrfTokens(except: ['dashboard*', 
-            "api/webhook/android",
-            "api/telegram/*",
-            "api/webhook/*",
+        
+        $middleware->validateCsrfTokens(except: [
+            'dashboard*',
+            'api/webhook/android',
+            'api/telegram/*',
+            'api/bot-wa/*',
+            'api/webhook/*',
+            'api/callback/*',
+            'hook-khfy',
+            'webhook/*',
+            'callback/*',
+            'telegram/*',
+            'telegram/management/*'
         ]);
+        
         $middleware->redirectUsersTo(fn (Request $request) => route('login'));
     })
     ->withExceptions(function (Exceptions $exceptions) {

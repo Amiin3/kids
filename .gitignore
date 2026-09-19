@@ -8,3 +8,7 @@ storage/logs/
 .DS_Store
 auth_milabot/
 bot_wa/
+*.zip
+*.apk
+storage/*.zip
+storage/*.apk
